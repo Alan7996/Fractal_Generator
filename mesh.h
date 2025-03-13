@@ -11,4 +11,5 @@ public:
 	std::vector<uint> indices;
 
 	Mesh fromMaya(const MFnMesh& mayaMesh);
+	MObject toMaya() const;
 };
