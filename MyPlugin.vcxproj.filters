@@ -33,9 +33,6 @@
     <ClCompile Include="mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="triangle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cylinder.h">
@@ -54,9 +51,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="mesh.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="triangle.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
