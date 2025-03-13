@@ -24,6 +24,8 @@
     <ClCompile Include="vec.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lib\Quaternion\POLYNOMIAL_4D.cpp" />
+    <ClCompile Include="lib\Quaternion\QUATERNION.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cylinder.h">

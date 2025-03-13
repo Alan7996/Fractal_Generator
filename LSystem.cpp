@@ -2,6 +2,9 @@
 #include <fstream>
 #include <stack>
 
+#include "PerlinNoise/PerlinNoise.h"
+#include "Quaternion/QUATERNION.h"
+
 #pragma warning(disable : 4244)
 #pragma warning(disable : 4290)
 #include "matrix.h"
@@ -11,6 +14,9 @@
 
 LSystem::LSystem() : mDfltAngle(22.5), mDfltStep(1.0)
 {
+    // demo include 
+    siv::PerlinNoise nx{ 000u };
+    QUATERNION::QUATERNION(1, 0, 0, 0);
 }
 
 void LSystem::setDefaultAngle(float degrees)
@@ -49,7 +55,7 @@ const std::string& LSystem::getIteration(unsigned int n)
 {
     if (n >= iterations.size())
     {
-        for (unsigned int i = iterations.size(); i <= n; i++)
+        for (unsigned int i = (unsigned int)iterations.size(); i <= n; i++)
         {
             current = iterate(current);
             iterations.push_back(current);

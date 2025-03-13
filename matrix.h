@@ -74,6 +74,7 @@
 // is optimized for performance and supports many more matrix operations.
 // It is available from our web site at <http://www.techsoftpl.com/matrix/>.
 //
+#pragma warning(disable : 5040)
 
 #ifndef __cplusplus
 #error Must use C++ for the type matrix.

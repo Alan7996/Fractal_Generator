@@ -112,6 +112,10 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetExt>.mll</TargetExt>
+    <LibraryPath>C:\Users\z799j\devkitBase\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDebug|Win32'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -358,7 +362,7 @@
       <AdditionalOptions>/GR /GS /EHac %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>.;C:\Program Files\Autodesk\Maya2022\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\z799j\devkitBase\include;$(ProjectDir)\lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;NT_PLUGIN;REQUIRE_IOSTREAM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -370,6 +374,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>Default</CompileAs>
       <DisableSpecificWarnings>4244;4305;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -377,10 +382,10 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;OpenMaya.lib;OpenMayaRender.lib;Foundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\LSystem.mll</OutputFile>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;OpenMaya.lib;OpenMayaUI.lib;OpenMayaAnim.lib;OpenMayaFX.lib;OpenMayaRender.lib;Foundation.lib;Image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile> $(OutDir)$(ProjectName).mll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\Maya2022\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\z799j\devkitBase\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>.\Release/MyPlugin.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <ImportLibrary>.\Release/MyPlugin.lib</ImportLibrary>
@@ -388,6 +393,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cylinder.cpp" />
+    <ClCompile Include="lib\Quaternion\POLYNOMIAL_4D.cpp" />
+    <ClCompile Include="lib\Quaternion\QUATERNION.cpp" />
     <ClCompile Include="LSystem.cpp" />
     <ClCompile Include="LSystemCmd.cpp" />
     <ClCompile Include="PluginMain.cpp" />

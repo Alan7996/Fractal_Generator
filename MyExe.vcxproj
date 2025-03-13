@@ -154,7 +154,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>.;C:\Program Files\Autodesk\Maya2022\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;C:\Program Files\Autodesk\Maya2022\include;$(ProjectDir)\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)LSystem.exe</OutputFile>
@@ -166,11 +167,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="lib\Quaternion\POLYNOMIAL_4D.cpp" />
+    <ClCompile Include="lib\Quaternion\QUATERNION.cpp" />
     <ClCompile Include="LSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="vec.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="lib\Quaternion\POLYNOMIAL_4D.h" />
+    <ClInclude Include="lib\Quaternion\QUATERNION.h" />
     <ClInclude Include="LSystem.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="vec.h" />

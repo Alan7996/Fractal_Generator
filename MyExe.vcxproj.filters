@@ -20,6 +20,12 @@
     <ClCompile Include="vec.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lib\Quaternion\QUATERNION.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\Quaternion\POLYNOMIAL_4D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LSystem.h">
@@ -31,5 +37,7 @@
     <ClInclude Include="vec.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="lib\Quaternion\POLYNOMIAL_4D.h" />
+    <ClInclude Include="lib\Quaternion\QUATERNION.h" />
   </ItemGroup>
 </Project>
