@@ -9,7 +9,8 @@ public:
 	std::vector<VEC3F> vertices;
 	std::vector<VEC3F> normals;
 	std::vector<uint> indices;
+	MObject material;
 
-	Mesh fromMaya(const MFnMesh& mayaMesh);
+	void fromMaya(const MFnMesh& mayaMesh);
 	MObject toMaya() const;
 };

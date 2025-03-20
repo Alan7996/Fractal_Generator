@@ -393,18 +393,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cylinder.cpp" />
+    <ClCompile Include="FractalCmd.cpp" />
+    <ClCompile Include="JuliaSet.cpp" />
     <ClCompile Include="lib\Quaternion\POLYNOMIAL_4D.cpp" />
     <ClCompile Include="lib\Quaternion\QUATERNION.cpp" />
     <ClCompile Include="LSystem.cpp" />
-    <ClCompile Include="LSystemCmd.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="PluginMain.cpp" />
     <ClCompile Include="vec.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cylinder.h" />
+    <ClInclude Include="FractalCmd.h" />
+    <ClInclude Include="JuliaSet.h" />
     <ClInclude Include="LSystem.h" />
-    <ClInclude Include="LSystemCmd.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="vec.h" />

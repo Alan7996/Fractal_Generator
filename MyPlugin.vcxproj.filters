@@ -15,9 +15,6 @@
     <ClCompile Include="LSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LSystemCmd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PluginMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,15 +30,18 @@
     <ClCompile Include="mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FractalCmd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JuliaSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cylinder.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="LSystem.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LSystemCmd.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="matrix.h">
@@ -51,6 +51,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="mesh.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FractalCmd.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JuliaSet.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

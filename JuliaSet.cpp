@@ -22,7 +22,7 @@ bool JuliaSet::isPointInSet(const VEC3F& point, double escapeRadius) const {
     return true;
 }
 
-
+// input output vex 
 QUATERNION JuliaSet::applyIteration(const QUATERNION& point) const {
     QUATERNION result = point;
     result.juliaIteration(c);
