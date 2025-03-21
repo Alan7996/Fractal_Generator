@@ -7,7 +7,9 @@
 #include <maya/MDagPath.h>
 #include <list>
 
+#include "JuliaSet.h"
 #include "mesh.h"
+#include "PortalMap.h"
 
 FractalCmd::FractalCmd() : MPxCommand()
 {
@@ -40,13 +42,23 @@ MStatus FractalCmd::doIt(const MArgList& args)
     MFnMesh mayaMesh(dagPath);
 
     // Convert input MFnMesh to custom mesh class
-    Mesh processedMesh;
-    processedMesh.fromMaya(mayaMesh);
+    Mesh inputMesh;
+    inputMesh.fromMaya(mayaMesh);
+
+    // Read portal data and construct PortalMap instance
+    // PortalMap pm = (...);
+
+    // Construct Julia Set with the PortalMap
 
     // Generate fractal meshes
 
+    // Perform marching cubes
+    Mesh processedMesh;
+    // MarchingCube(&processedMesh, fractalMeshes);
+
     // Convert back to Maya MFnMesh
-    MFnMesh outputMesh = processedMesh.toMaya();
+    //MFnMesh outputMesh = processedMesh.toMaya();
+    MFnMesh outputMesh = inputMesh.toMaya();
 
     // Print confirmation
     MGlobal::displayInfo("Fractal processing completed for mesh: " + meshName);

@@ -3,23 +3,23 @@
 
 JuliaSet::JuliaSet(int maxIter, double maxMag, const QUATERNION& c)
     : maxIterations(maxIter), maxMagnitude(maxMag), c(c) {
+    field = PortalMap();
 }
 
-bool JuliaSet::isPointInSet(const VEC3F& point, double escapeRadius) const {
+Real JuliaSet::queryFieldValue(const VEC3F& point, double escapeRadius) const {
 
-    QUATERNION z(0.0, point[0], point[1], point[2]);
+    VEC3F currPos = point;
+    Real currMag = currPos.norm();
+    int numIter = 0;
 
-
-    for (int i = 0; i < maxIterations; i++) {
-        z.juliaIteration(c);
-
-        double magSquared = z.magnitude();
-        if (magSquared > escapeRadius * escapeRadius) {
-            return false;
-        }
+    while (currMag < maxMagnitude && numIter < maxIterations) {
+        VEC3F newPos = field.getFieldValue(currPos);
+        currPos = newPos;
+        currMag = currPos.norm();
+        ++numIter;
     }
 
-    return true;
+    return log(currMag);
 }
 
 // input output vex 
@@ -28,7 +28,6 @@ QUATERNION JuliaSet::applyIteration(const QUATERNION& point) const {
     result.juliaIteration(c);
     return result;
 }
-
 
 
 void JuliaSet::setQuaternionC(const QUATERNION& newC) {

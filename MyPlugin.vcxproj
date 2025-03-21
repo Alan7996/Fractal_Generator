@@ -400,7 +400,9 @@
     <ClCompile Include="LSystem.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="PluginMain.cpp" />
+    <ClCompile Include="PortalMap.cpp" />
     <ClCompile Include="vec.cpp" />
+    <ClCompile Include="VersorMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cylinder.h" />
@@ -409,7 +411,9 @@
     <ClInclude Include="LSystem.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="mesh.h" />
+    <ClInclude Include="PortalMap.h" />
     <ClInclude Include="vec.h" />
+    <ClInclude Include="VersorMap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

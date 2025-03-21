@@ -36,6 +36,12 @@
     <ClCompile Include="JuliaSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VersorMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PortalMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cylinder.h">
@@ -57,6 +63,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="JuliaSet.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VersorMap.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PortalMap.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
