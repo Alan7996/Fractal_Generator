@@ -8,6 +8,7 @@
 #include <list>
 
 #include "JuliaSet.h"
+#include "MarchingCubes.h"
 #include "mesh.h"
 #include "PortalMap.h"
 
@@ -224,12 +225,13 @@ MStatus FractalCmd::doIt(const MArgList& args)
     // Generate fractal meshes
 
     // Perform marching cubes
-    Mesh processedMesh;
-    // MarchingCube(&processedMesh, fractalMeshes);
+    JuliaSet js;
+    Mesh fractalMesh;
+    MarchingCubes(fractalMesh, js);
 
     // Convert back to Maya MFnMesh
     //MFnMesh outputMesh = processedMesh.toMaya();
-    MFnMesh outputMesh = inputMesh.toMaya();
+    MFnMesh outputMesh = fractalMesh.toMaya();
 
     // Print confirmation
     MGlobal::displayInfo("Fractal processing completed for mesh: " + meshName);
