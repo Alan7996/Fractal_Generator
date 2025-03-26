@@ -584,7 +584,10 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js) {
 		}
 	}
 
-    // Clear old mesh data
+    // Clear old mesh data just in case
+    mesh.vertices.clear();
+    mesh.indices.clear();
+    mesh.normals.clear();
 
     // Convert the generated list of triangles to new custom mesh representation
     std::unordered_map<XYZ, unsigned int, XYZHash, XYZEqual> vertexMap;
