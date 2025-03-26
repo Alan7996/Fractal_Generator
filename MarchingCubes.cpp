@@ -531,7 +531,9 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js) {
 	for (k=0;k<NZ;k++) {
 		for (j=0;j<NY;j++) {
 			for (i=0;i<NX;i++) {
-                VEC3F point; // TODO define the exact position of the point
+                VEC3F point((float)i / (float)NX * 2.0 - 1.0,
+                    (float)j / (float)NY * 2.0 - 1.0,
+                    (float)k / (float)NZ * 2.0 - 1.0);
                 data[i][j][k] = js.queryFieldValue(point);
 			}
 		}

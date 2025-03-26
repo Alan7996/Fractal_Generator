@@ -227,7 +227,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
     // Perform marching cubes
     JuliaSet js;
     Mesh fractalMesh;
-    MarchingCubes(fractalMesh, js);
+    MarchingCubes(fractalMesh, juliaSet);
 
     // Convert back to Maya MFnMesh
     //MFnMesh outputMesh = processedMesh.toMaya();
