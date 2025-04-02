@@ -23,6 +23,9 @@ public:
 	void setMaxIterations(int maxIter);
 	void setMaxMagnitude(double maxMag);
 
+	void setPortalMap(const PortalMap& map) { field = map; }
+	const PortalMap& getPortalMap() const { return field; }
+
 private:
 	int maxIterations;
 	double maxMagnitude;

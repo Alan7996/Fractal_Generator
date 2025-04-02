@@ -5,6 +5,7 @@
 #include <maya/MFnMesh.h>
 #include <maya/MSelectionList.h>
 #include <maya/MDagPath.h>
+#include <maya/MPointArray.h>
 #include <list>
 
 #include "JuliaSet.h"
@@ -152,6 +153,61 @@ void visualizeVersorField(const VersorMap& versorMap, int width, int height, dou
     MGlobal::displayInfo(stats.str().c_str());
 }
 
+PortalMap extractPortalsFromMesh(const MFnMesh& mayaMesh) {
+    // This function extracts portal information from a Maya mesh
+    // as described in the design document section 2.1.1 Algorithm Details
+
+    PortalMap portalMap;
+
+    // Get mesh components
+    MPointArray points;
+    mayaMesh.getPoints(points, MSpace::kObject);
+
+    double maxDistSq = 0.0;
+    MPoint center(0, 0, 0);
+
+    // Calculate center of the mesh
+    for (unsigned int i = 0; i < points.length(); i++) {
+        center += points[i];
+    }
+    if (points.length() > 0) {
+        center = center / points.length();
+    }
+
+    // Find maximum distance from center
+    for (unsigned int i = 0; i < points.length(); i++) {
+        double distSq = (points[i] - center).length();
+        if (distSq > maxDistSq) {
+            maxDistSq = distSq;
+        }
+    }
+
+    const int numPortals = 3;
+
+    for (int i = 0; i < numPortals; i++) {
+        double angle = 2.0 * M_PI * (i / static_cast<double>(numPortals));
+        double radius = sqrt(maxDistSq) * 0.8;
+
+        VEC3F portalCenter(
+            center.x + radius * cos(angle),
+            center.y + radius * sin(angle),
+            center.z + 0.1 * i 
+        );
+
+        // Create AngleAxis rotation 
+        AngleAxis<Real> rotation(angle + M_PI / 2, VEC3F(0, 1, 0));
+
+        // Add portal to the map
+        portalMap.addPortal(portalCenter, rotation);
+    }
+
+    portalMap.portalRadius = sqrt(maxDistSq) * 0.2;
+    portalMap.portalScale = 0.8;
+
+    return portalMap;
+}
+
+
 
 MStatus FractalCmd::doIt(const MArgList& args)
 {
@@ -169,14 +225,10 @@ MStatus FractalCmd::doIt(const MArgList& args)
     int height = 25; 
     double scale = 0.05;
 
-    QUATERNION juliaC(cw, cx, cy, cz);
-    JuliaSet juliaSet(maxIterations, escapeRadius, juliaC);
 
 
-    Versor versor;
-    Modulus modulus;
-    VersorMap versorMap(versor, modulus);
 
+    /*
     std::ostringstream oss;
     oss << "Julia Set Parameters:" << std::endl;
     oss << "  Iterations: " << maxIterations << std::endl;
@@ -187,7 +239,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
     visualizeJuliaSet(juliaSet, width, height, scale);
 
     visualizeVersorField(versorMap, width, height, scale);
-
+    */
 
 
 
@@ -219,19 +271,67 @@ MStatus FractalCmd::doIt(const MArgList& args)
 
     // Read portal data and construct PortalMap instance
     // PortalMap pm = (...);
+    PortalMap portalMap = extractPortalsFromMesh(mayaMesh);
+
+    // Display portal map info
+    std::ostringstream portalInfo;
+    portalInfo << "Extracted " << portalMap.portalCenters.size() << " portals from mesh:" << std::endl;
+    for (size_t i = 0; i < portalMap.portalCenters.size(); i++) {
+        const VEC3F& center = portalMap.portalCenters[i];
+        portalInfo << "  Portal " << i << ": Center ("
+            << center[0] << ", " << center[1] << ", " << center[2] << ")" << std::endl;
+        portalInfo << "  Rotation angle: " << portalMap.portalRotations[i].angle() << std::endl;
+    }
+    portalInfo << "Portal radius: " << portalMap.portalRadius << std::endl;
+    portalInfo << "Portal scale: " << portalMap.portalScale << std::endl;
+
+    MGlobal::displayInfo(portalInfo.str().c_str());
+
 
     // Construct Julia Set with the PortalMap
+    QUATERNION juliaC(cw, cx, cy, cz);
+    JuliaSet juliaSet(maxIterations, escapeRadius, juliaC);
+
+    juliaSet.setPortalMap(portalMap);
+
+    // Display Julia Set parameters
+    std::ostringstream oss;
+    oss << "Julia Set Parameters:" << std::endl;
+    oss << "  Iterations: " << maxIterations << std::endl;
+    oss << "  Escape Radius: " << escapeRadius << std::endl;
+    oss << "  c = (" << cx << ", " << cy << ", " << cz << ", " << cw << ")" << std::endl;
+    MGlobal::displayInfo(oss.str().c_str());
+
+    // Visualize the Julia Set
+    visualizeJuliaSet(juliaSet, width, height, scale);
+
+    // Set up versor field
+    Versor versor;
+    Modulus modulus;
+    VersorMap versorMap(versor, modulus);
+    visualizeVersorField(versorMap, width, height, scale);
+
 
     // Generate fractal meshes
 
     // Perform marching cubes
-    JuliaSet js;
     Mesh fractalMesh;
     MarchingCubes(fractalMesh, juliaSet);
 
     // Convert back to Maya MFnMesh
-    //MFnMesh outputMesh = processedMesh.toMaya();
     MFnMesh outputMesh = fractalMesh.toMaya();
+    //MFnMesh outputMesh = processedMesh.toMaya();
+    //MFnMesh outputMesh = inputMesh.toMaya();
+
+
+    // should we add a check here?
+    /*
+    if (outputMesh == MObject::kNullObj) {
+        MGlobal::displayError("Failed to create output mesh");
+        return MStatus::kFailure;
+    }
+    */
+
 
     // Print confirmation
     MGlobal::displayInfo("Fractal processing completed for mesh: " + meshName);

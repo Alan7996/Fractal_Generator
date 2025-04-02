@@ -1,5 +1,17 @@
 #include "PortalMap.h"
 
+PortalMap::PortalMap() {
+    portalRadius = 0.2;
+    portalScale = 0.8;
+}
+
+PortalMap::PortalMap(double radius, double scale) {
+    portalRadius = radius;
+    portalScale = scale;
+}
+
+
+
 VEC3F PortalMap::getFieldValue(const VEC3F& pos) const {
     if (portalCenters.empty()) {
         return pos;
