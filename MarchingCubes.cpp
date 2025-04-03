@@ -504,13 +504,13 @@ VEC3F Normalize(const VEC3F& v) {
     return (length > 0) ? VEC3F{v[0] / length, v[1] / length, v[2] / length} : VEC3F{0, 0, 0};
 }
 
-void MarchingCubes(Mesh& mesh, JuliaSet& js) {
+void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox) {
     std::vector<std::vector<std::vector<double>>> data;
     data.resize(NZ);
     std::vector<TRIANGLE> tris;
 
 	int i,j,k,l;
-    short int isolevel = 128;
+    double isolevel = 0.5;
 	GRIDCELL grid;
 
 	data.resize(NX);
@@ -528,12 +528,15 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js) {
     }
 
     // Populate a 3D grid of Julia set field queries
+    float xSpan = maxBox[0] - minBox[0];
+    float ySpan = maxBox[1] - minBox[1];
+    float zSpan = maxBox[2] - minBox[2];
 	for (k=0;k<NZ;k++) {
 		for (j=0;j<NY;j++) {
 			for (i=0;i<NX;i++) {
-                VEC3F point((float)i / (float)NX * 2.0 - 1.0,
-                    (float)j / (float)NY * 2.0 - 1.0,
-                    (float)k / (float)NZ * 2.0 - 1.0);
+                VEC3F point((float)i / (float)NX * xSpan + minBox[0],
+                            (float)j / (float)NY * ySpan + minBox[1],
+                            (float)k / (float)NZ * zSpan + minBox[2]);
                 data[i][j][k] = js.queryFieldValue(point);
 			}
 		}
@@ -592,11 +595,18 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js) {
     // Convert the generated list of triangles to new custom mesh representation
     std::unordered_map<XYZ, unsigned int, XYZHash, XYZEqual> vertexMap;
     mesh.normals.resize(tris.size() * 3, {0, 0, 0});
+
+    auto rescaleGrid = [&minBox, &maxBox](VEC3F v) {
+        return VEC3F((v[0] / (float)NX) * (maxBox[0] - minBox[0]) + minBox[0],
+                     (v[1] / (float)NY) * (maxBox[1] - minBox[1]) + minBox[1],
+                     (v[2] / (float)NZ) * (maxBox[2] - minBox[2]) + minBox[2]);
+    };
     
     for (const auto& tri : tris) {
-        VEC3F v0 = {tri.p[0].x, tri.p[0].y, tri.p[0].z};
-        VEC3F v1 = {tri.p[1].x, tri.p[1].y, tri.p[1].z};
-        VEC3F v2 = {tri.p[2].x, tri.p[2].y, tri.p[2].z};
+        VEC3F v0 = rescaleGrid({tri.p[0].x, tri.p[0].y, tri.p[0].z});
+        VEC3F v1 = rescaleGrid({tri.p[1].x, tri.p[1].y, tri.p[1].z});
+        VEC3F v2 = rescaleGrid({tri.p[2].x, tri.p[2].y, tri.p[2].z});
+        VEC3F tripi[3] = { v0, v1, v2 };
 
         // Compute face normal
         VEC3F edge1 = {v1[0] - v0[0], v1[1] - v0[1], v1[2] - v0[2]};
@@ -604,7 +614,7 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js) {
         VEC3F normal = Normalize(CrossProduct(edge1, edge2));
 
         for (i = 0; i < 3; ++i) {
-            const XYZ& vertex = tri.p[i];
+            const XYZ& vertex = { tripi[i][0], tripi[i][1], tripi[i][2] };
             
             // If vertex is new, add it to the mesh
             if (vertexMap.find(vertex) == vertexMap.end()) {
