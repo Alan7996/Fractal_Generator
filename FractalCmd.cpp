@@ -292,6 +292,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
     QUATERNION juliaC(cw, cx, cy, cz);
     JuliaSet juliaSet(maxIterations, escapeRadius, juliaC);
 
+    juliaSet.setInputMesh(inputMesh);
     juliaSet.setPortalMap(portalMap);
 
     // Display Julia Set parameters

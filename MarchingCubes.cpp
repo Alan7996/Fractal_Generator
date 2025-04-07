@@ -542,6 +542,19 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox) {
 		}
 	}
 
+    // debug after populating the 3D grid
+    double minValue = data[0][0][0];
+    double maxValue = data[0][0][0];
+    for (int i = 0; i < NX; i++) {
+        for (int j = 0; j < NY; j++) {
+            for (int k = 0; k < NZ; k++) {
+                minValue = std::min(minValue, data[i][j][k]);
+                maxValue = std::max(maxValue, data[i][j][k]);
+            }
+        }
+    }
+    std::cout << "Field value range: [" << minValue << ", " << maxValue << "]" << std::endl;
+
     // Perform marching cube for each voxel cube
     for (i=0;i<NX-1;i++) {
 		for (j=0;j<NY-1;j++) {
