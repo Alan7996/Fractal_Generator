@@ -510,7 +510,7 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox) {
     std::vector<TRIANGLE> tris;
 
 	int i,j,k,l;
-    double isolevel = 0.5;
+    double isolevel = 0.0;
 	GRIDCELL grid;
 
 	data.resize(NX);
@@ -527,10 +527,21 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox) {
         }
     }
 
-    // Populate a 3D grid of Julia set field queries
+    // Adjust min and max box sizes to account for half box diff
     float xSpan = maxBox[0] - minBox[0];
     float ySpan = maxBox[1] - minBox[1];
     float zSpan = maxBox[2] - minBox[2];
+    minBox[0] -= xSpan / (float)NX;
+    maxBox[0] += xSpan / (float)NX;
+    minBox[1] -= ySpan / (float)NY;
+    maxBox[1] += ySpan / (float)NY;
+    minBox[2] -= zSpan / (float)NZ;
+    maxBox[2] += zSpan / (float)NZ;
+    xSpan = maxBox[0] - minBox[0];
+    ySpan = maxBox[1] - minBox[1];
+    zSpan = maxBox[2] - minBox[2];
+
+    // Populate a 3D grid of Julia set field queries
 	for (k=0;k<NZ;k++) {
 		for (j=0;j<NY;j++) {
 			for (i=0;i<NX;i++) {

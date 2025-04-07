@@ -13,13 +13,66 @@ void JuliaSet::setInputMesh(const Mesh& mesh) {
     hasMesh = true;
 }
 
-Real JuliaSet::computeDistanceToMesh(const VEC3F& point) const {
-    if (!hasMesh) return 0.0; // If no mesh is set, return 0
+// Helper function: compute closest point on triangle ABC to point P
+static VEC3F closestPointOnTriangle(const VEC3F& p, const VEC3F& a, const VEC3F& b, const VEC3F& c) {
+    // Compute edges
+    VEC3F ab = b - a;
+    VEC3F ac = c - a;
+    VEC3F ap = p - a;
 
-    // Compute approximate distance to the mesh
+    // Compute dot products
+    Real d1 = ab.dot(ap);
+    Real d2 = ac.dot(ap);
+
+    // Check if P in vertex region outside A
+    if (d1 <= 0 && d2 <= 0) return a;
+
+    // Check if P in vertex region outside B
+    VEC3F bp = p - b;
+    Real d3 = ab.dot(bp);
+    Real d4 = ac.dot(bp);
+    if (d3 >= 0 && d4 <= d3) return b;
+
+    // Check if P in edge region of AB
+    Real vc = d1 * d4 - d3 * d2;
+    if (vc <= 0 && d1 >= 0 && d3 <= 0) {
+        Real v = d1 / (d1 - d3);
+        return a + ab * v;
+    }
+
+    // Check if P in vertex region outside C
+    VEC3F cp = p - c;
+    Real d5 = ab.dot(cp);
+    Real d6 = ac.dot(cp);
+    if (d6 >= 0 && d5 <= d6) return c;
+
+    // Check if P in edge region of AC
+    Real vb = d5 * d2 - d1 * d6;
+    if (vb <= 0 && d2 >= 0 && d6 <= 0) {
+        Real w = d2 / (d2 - d6);
+        return a + ac * w;
+    }
+
+    // Check if P in edge region of BC
+    Real va = d3 * d6 - d5 * d4;
+    if (va <= 0 && (d4 - d3) >= 0 && (d5 - d6) >= 0) {
+        Real w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
+        return b + (c - b) * w;
+    }
+
+    // P inside face region. Compute barycentric coordinates (u, v, w)
+    Real denom = 1.0 / (va + vb + vc);
+    Real v = vb * denom;
+    Real w = vc * denom;
+    return a + ab * v + ac * w;
+}
+
+VEC3F JuliaSet::computeClosestPointOnMesh(const VEC3F& point) const {
+    if (!hasMesh) return VEC3F(); // Return (0,0,0) if no mesh is available
+
+    VEC3F closestPoint;
     Real minDistance = std::numeric_limits<Real>::max();
 
-    // Compute distance to each triangle
     for (size_t i = 0; i < inputMesh.indices.size(); i += 3) {
         unsigned int idx1 = inputMesh.indices[i];
         unsigned int idx2 = inputMesh.indices[i + 1];
@@ -29,19 +82,71 @@ Real JuliaSet::computeDistanceToMesh(const VEC3F& point) const {
         const VEC3F& v2 = inputMesh.vertices[idx2];
         const VEC3F& v3 = inputMesh.vertices[idx3];
 
-        // Compute distance to triangle (this is an approximation)
-        // A more accurate approach would compute the exact point-triangle distance
-        Real d1 = (point - v1).norm();
-        Real d2 = (point - v2).norm();
-        Real d3 = (point - v3).norm();
+        VEC3F candidate = closestPointOnTriangle(point, v1, v2, v3);
+        Real distance = (candidate - point).norm();
 
-        Real triangleDist = std::min(std::min(d1, d2), d3);
-        minDistance = std::min(minDistance, triangleDist);
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestPoint = candidate;
+        }
     }
 
-    return minDistance;
+    return closestPoint;
 }
 
+bool rayIntersectsTriangle(const VEC3F& origin, const VEC3F& dir,
+    const VEC3F& v0, const VEC3F& v1, const VEC3F& v2) {
+    const float EPSILON = 1e-6f;
+
+    VEC3F edge1 = v1 - v0;
+    VEC3F edge2 = v2 - v0;
+    VEC3F h = dir.cross(edge2);
+    Real a = edge1.dot(h);
+
+    if (std::abs(a) < EPSILON) return false; // Ray is parallel to triangle
+
+    Real f = 1.0 / a;
+    VEC3F s = origin - v0;
+    Real u = f * s.dot(h);
+    if (u < 0.0 || u > 1.0) return false;
+
+    VEC3F q = s.cross(edge1);
+    Real v = f * dir.dot(q);
+    if (v < 0.0 || u + v > 1.0) return false;
+
+    Real t = f * edge2.dot(q);
+    return t > EPSILON;
+}
+
+bool JuliaSet::isPointInsideMesh(const VEC3F& point) const {
+    VEC3F rayDir(1.0f, 0.0f, 0.0f); // Arbitrary direction (e.g., +X)
+    int intersectionCount = 0;
+
+    for (size_t i = 0; i < inputMesh.indices.size(); i += 3) {
+        const VEC3F& v0 = inputMesh.vertices[inputMesh.indices[i]];
+        const VEC3F& v1 = inputMesh.vertices[inputMesh.indices[i + 1]];
+        const VEC3F& v2 = inputMesh.vertices[inputMesh.indices[i + 2]];
+
+        if (rayIntersectsTriangle(point, rayDir, v0, v1, v2)) {
+            intersectionCount++;
+        }
+    }
+
+    return (intersectionCount % 2) == 1;
+}
+
+Real JuliaSet::computeSignedDistanceToMesh(const VEC3F& point) const {
+    if (!hasMesh) return 0.0;
+
+    // First, compute the closest point on the mesh
+    VEC3F closestPoint = computeClosestPointOnMesh(point);
+    Real unsignedDistance = (point - closestPoint).norm();
+
+    // Determine if point is inside using ray casting
+    bool isInside = isPointInsideMesh(point);
+
+    return isInside ? unsignedDistance : -unsignedDistance;
+}
 
 Real JuliaSet::queryFieldValue(const VEC3F& point, double escapeRadius) const {
 
@@ -49,7 +154,7 @@ Real JuliaSet::queryFieldValue(const VEC3F& point, double escapeRadius) const {
     Real currMag = currPos.norm();
     int numIter = 0;
     // Compute distance to mesh (if available)
-    Real meshDistance = hasMesh ? computeDistanceToMesh(point) : 0.0;
+    VEC3F closestPoint = computeClosestPointOnMesh(point);
 
     // Blend the distance field with the Julia set
     Real blendFactor = 1.0;
@@ -61,39 +166,11 @@ Real JuliaSet::queryFieldValue(const VEC3F& point, double escapeRadius) const {
         ++numIter;
     }
 
-    Real juliaValue = 0.5 + (log(currMag) - boundary_threshold) / scale_factor;
-
-    // Calculate distance to mesh if available
-    Real distanceValue = 0.5;
-
-    if (hasMesh) {
-        // Find closest distance to any face in the mesh
-        Real minDistance = std::numeric_limits<Real>::max();
-        bool isInside = false;
-
-        // Very simple distance approximation - find closest vertex
-        for (const auto& vertex : inputMesh.vertices) {
-            Real dist = (point - vertex).norm();
-            minDistance = std::min(minDistance, dist);
-        }
-
-        // Normalize the distance field
-        Real maxDist = 1.0; // Maximum expected distance
-        Real normalizedDist = minDistance / maxDist;
-
-        // Map to field value (0.5 at approximate surface)
-        distanceValue = 0.5 + normalizedDist - 0.2;
-    }
-
-    // Blend values and ensure crossing the threshold
-    Real blendedValue = juliaValue * (1.0 - blendFactor) + distanceValue * blendFactor;
-
-    // Critical: Normalize to ensure we cross the 0.5 threshold
-    Real minFieldVal = 0.3;
-    Real maxFieldVal = 0.7;
+    // Calculate signed distance to mesh
+    Real distanceValue = computeSignedDistanceToMesh(point);
 
     // Return normalized value ensuring values span across 0.5
-    return minFieldVal + (blendedValue - juliaValue) / (1.0 - juliaValue) * (maxFieldVal - minFieldVal);
+    return distanceValue;
 }
 
 // input output vex 

@@ -218,7 +218,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
 
 
 
-    int maxIterations = 5;
+    int maxIterations = 1;
     double escapeRadius = 4.0;
     double cx = 0.0, cy = 0.5, cz = 0.0, cw = 0.0;
     int width = 50; 

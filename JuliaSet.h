@@ -19,7 +19,9 @@ public:
 	QUATERNION applyIteration(const QUATERNION& point) const;
 
 	void setInputMesh(const Mesh& mesh);
-	Real computeDistanceToMesh(const VEC3F& point) const;
+	VEC3F computeClosestPointOnMesh(const VEC3F& point) const;
+	bool isPointInsideMesh(const VEC3F& point) const;
+	Real computeSignedDistanceToMesh(const VEC3F& point) const;
 
 	void setQuaternionC(const QUATERNION& newC);
 	void setMaxIterations(int maxIter);
