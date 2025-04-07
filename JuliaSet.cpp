@@ -101,25 +101,34 @@ bool rayIntersectsTriangle(const VEC3F& origin, const VEC3F& dir,
     VEC3F edge1 = v1 - v0;
     VEC3F edge2 = v2 - v0;
     VEC3F h = dir.cross(edge2);
-    Real a = edge1.dot(h);
+    float a = edge1.dot(h);
 
-    if (std::abs(a) < EPSILON) return false; // Ray is parallel to triangle
+    if (a > -EPSILON && a < EPSILON)
+        return false; // Ray is parallel
 
-    Real f = 1.0 / a;
+    float f = 1.0 / a;
     VEC3F s = origin - v0;
-    Real u = f * s.dot(h);
-    if (u < 0.0 || u > 1.0) return false;
+    float u = f * s.dot(h);
+    if (u < 0.0 || u > 1.0)
+        return false;
 
     VEC3F q = s.cross(edge1);
-    Real v = f * dir.dot(q);
-    if (v < 0.0 || u + v > 1.0) return false;
+    float v = f * dir.dot(q);
+    if (v < 0.0 || u + v > 1.0)
+        return false;
 
-    Real t = f * edge2.dot(q);
-    return t > EPSILON;
+    float t = f * edge2.dot(q);
+    if (t > EPSILON)
+        return true;
+
+    return false;
 }
 
 bool JuliaSet::isPointInsideMesh(const VEC3F& point) const {
-    VEC3F rayDir(1.0f, 0.0f, 0.0f); // Arbitrary direction (e.g., +X)
+    VEC3F rayDir = VEC3F(1.0f, 0.5f, 0.25f); // Avoid axis-aligned
+    rayDir.normalize();
+    VEC3F origin = point + rayDir * 1e-4f;   // Offset origin slightly
+
     int intersectionCount = 0;
 
     for (size_t i = 0; i < inputMesh.indices.size(); i += 3) {
@@ -127,13 +136,14 @@ bool JuliaSet::isPointInsideMesh(const VEC3F& point) const {
         const VEC3F& v1 = inputMesh.vertices[inputMesh.indices[i + 1]];
         const VEC3F& v2 = inputMesh.vertices[inputMesh.indices[i + 2]];
 
-        if (rayIntersectsTriangle(point, rayDir, v0, v1, v2)) {
+        if (rayIntersectsTriangle(origin, rayDir, v0, v1, v2)) {
             intersectionCount++;
         }
     }
 
     return (intersectionCount % 2) == 1;
 }
+
 
 Real JuliaSet::computeSignedDistanceToMesh(const VEC3F& point) const {
     if (!hasMesh) return 0.0;
