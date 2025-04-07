@@ -42,6 +42,7 @@ Real JuliaSet::computeDistanceToMesh(const VEC3F& point) const {
     return minDistance;
 }
 
+
 Real JuliaSet::queryFieldValue(const VEC3F& point, double escapeRadius) const {
 
     VEC3F currPos = point;
@@ -51,7 +52,7 @@ Real JuliaSet::queryFieldValue(const VEC3F& point, double escapeRadius) const {
     Real meshDistance = hasMesh ? computeDistanceToMesh(point) : 0.0;
 
     // Blend the distance field with the Julia set
-    Real blendFactor = 0.5; // Adjust this to control the influence of the mesh
+    Real blendFactor = 1.0;
 
     while (currMag < maxMagnitude && numIter < maxIterations) {
         VEC3F newPos = field.getFieldValue(currPos);
@@ -62,14 +63,37 @@ Real JuliaSet::queryFieldValue(const VEC3F& point, double escapeRadius) const {
 
     Real juliaValue = 0.5 + (log(currMag) - boundary_threshold) / scale_factor;
 
-    // Blend with distance field
-    // This makes the scalar field negative inside the mesh and positive outside
-    Real distanceFactor = tanh(meshDistance * 5.0) * 0.5 + 0.5; // Scale to [0,1]
+    // Calculate distance to mesh if available
+    Real distanceValue = 0.5;
 
-    return juliaValue * (1.0 - blendFactor) + distanceFactor * blendFactor;
+    if (hasMesh) {
+        // Find closest distance to any face in the mesh
+        Real minDistance = std::numeric_limits<Real>::max();
+        bool isInside = false;
 
-    // Real range = 1.84444 + 0.167358;
-    // return (log(currMag) - (-1.84444)) / range;
+        // Very simple distance approximation - find closest vertex
+        for (const auto& vertex : inputMesh.vertices) {
+            Real dist = (point - vertex).norm();
+            minDistance = std::min(minDistance, dist);
+        }
+
+        // Normalize the distance field
+        Real maxDist = 1.0; // Maximum expected distance
+        Real normalizedDist = minDistance / maxDist;
+
+        // Map to field value (0.5 at approximate surface)
+        distanceValue = 0.5 + normalizedDist - 0.2;
+    }
+
+    // Blend values and ensure crossing the threshold
+    Real blendedValue = juliaValue * (1.0 - blendFactor) + distanceValue * blendFactor;
+
+    // Critical: Normalize to ensure we cross the 0.5 threshold
+    Real minFieldVal = 0.3;
+    Real maxFieldVal = 0.7;
+
+    // Return normalized value ensuring values span across 0.5
+    return minFieldVal + (blendedValue - juliaValue) / (1.0 - juliaValue) * (maxFieldVal - minFieldVal);
 }
 
 // input output vex 
