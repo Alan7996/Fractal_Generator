@@ -1,5 +1,5 @@
 #include "MarchingCubes.h"
-
+#include <maya/MGlobal.h>
 #include <vector>
 
 #include "Quaternion/SETTINGS.h"
@@ -44,9 +44,9 @@ vertex 0 to vertex 1, Edge 1 is from 2->3 and so on around clockwise to
 vertex 0 again. Then Edge 4 to 7 make up the top face, 4->5, 5->6, 6->7
 and 7->4.  Edge 8 thru 11 are the vertical edges from vert 0->4, 1->5,
 2->6, and 3->7.
-    4--------5     *---4----*
-    /|       /|    /|       /|
-    / |      / |   7 |      5 |
+   4--------5     *---4----*
+  /|       /|    /|       /|
+ / |      / |   7 |      5 |
 /  |     /  |  /  8     /  9
 7--------6   | *----6---*   |
 |   |    |   | |   |    |   |
@@ -504,7 +504,7 @@ VEC3F Normalize(const VEC3F& v) {
     return (length > 0) ? VEC3F{v[0] / length, v[1] / length, v[2] / length} : VEC3F{0, 0, 0};
 }
 
-void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox) {
+void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, PortalMap pm) {
     std::vector<std::vector<std::vector<double>>> data;
     data.resize(NZ);
     std::vector<TRIANGLE> tris;
@@ -512,6 +512,16 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox) {
 	int i,j,k,l;
     double isolevel = 0.0;
 	GRIDCELL grid;
+
+    //minBox = pm.getFieldValue(minBox);
+    //maxBox = pm.getFieldValue(maxBox);
+
+    std::ostringstream stats;
+    stats << "in Marching Cubes";
+    stats << "minBox: (" << minBox[0] << ", " << minBox[1] << ", " << minBox[2] << ")";
+    stats << "maxBox: (" << maxBox[0] << ", " << maxBox[1] << ", " << maxBox[2] << ")";
+
+    MGlobal::displayInfo(stats.str().c_str());
 
 	data.resize(NX);
 	for (i=0;i<NX;i++) {
@@ -548,7 +558,11 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox) {
                 VEC3F point((float)i / (float)NX * xSpan + minBox[0],
                             (float)j / (float)NY * ySpan + minBox[1],
                             (float)k / (float)NZ * zSpan + minBox[2]);
-                data[i][j][k] = js.queryFieldValue(point);
+
+                //apply tranformation matrix not correct
+                VEC3F newPt = pm.getFieldValue(point);
+
+                data[i][j][k] = js.queryFieldValue(newPt);
 			}
 		}
 	}

@@ -163,46 +163,6 @@ PortalMap extractPortalsFromMesh(const MFnMesh& mayaMesh) {
     MPointArray points;
     mayaMesh.getPoints(points, MSpace::kObject);
 
-    double maxDistSq = 0.0;
-    MPoint center(0, 0, 0);
-
-    // Calculate center of the mesh
-    for (unsigned int i = 0; i < points.length(); i++) {
-        center += points[i];
-    }
-    if (points.length() > 0) {
-        center = center / points.length();
-    }
-
-    // Find maximum distance from center
-    for (unsigned int i = 0; i < points.length(); i++) {
-        double distSq = (points[i] - center).length();
-        if (distSq > maxDistSq) {
-            maxDistSq = distSq;
-        }
-    }
-
-    const int numPortals = 3;
-
-    for (int i = 0; i < numPortals; i++) {
-        double angle = 2.0 * M_PI * (i / static_cast<double>(numPortals));
-        double radius = sqrt(maxDistSq) * 0.8;
-
-        VEC3F portalCenter(
-            center.x + radius * cos(angle),
-            center.y + radius * sin(angle),
-            center.z + 0.1 * i 
-        );
-
-        // Create AngleAxis rotation 
-        AngleAxis<Real> rotation(angle + M_PI / 2, VEC3F(0, 1, 0));
-
-        // Add portal to the map
-        portalMap.addPortal(portalCenter, rotation);
-    }
-
-    portalMap.portalRadius = sqrt(maxDistSq) * 0.2;
-    portalMap.portalScale = 0.8;
 
     return portalMap;
 }
@@ -271,7 +231,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
 
     // Read portal data and construct PortalMap instance
     // PortalMap pm = (...);
-    PortalMap portalMap = extractPortalsFromMesh(mayaMesh);
+    PortalMap portalMap = PortalMap();
 
     // Display portal map info
     std::ostringstream portalInfo;
@@ -282,8 +242,6 @@ MStatus FractalCmd::doIt(const MArgList& args)
             << center[0] << ", " << center[1] << ", " << center[2] << ")" << std::endl;
         portalInfo << "  Rotation angle: " << portalMap.portalRotations[i].angle() << std::endl;
     }
-    portalInfo << "Portal radius: " << portalMap.portalRadius << std::endl;
-    portalInfo << "Portal scale: " << portalMap.portalScale << std::endl;
 
     MGlobal::displayInfo(portalInfo.str().c_str());
 
@@ -317,7 +275,17 @@ MStatus FractalCmd::doIt(const MArgList& args)
 
     // Perform marching cubes
     Mesh fractalMesh;
-    MarchingCubes(fractalMesh, juliaSet, inputMesh.minVert, inputMesh.maxVert);
+
+
+    std::ostringstream stats;
+    stats << "minBox: (" << inputMesh.minVert[0] << ", " << inputMesh.minVert[1] << ", " << inputMesh.minVert[2] << ")";
+    stats << "maxBox: (" << inputMesh.maxVert[0] << ", " << inputMesh.maxVert[1] << ", " << inputMesh.maxVert[2] << ")";
+
+    MGlobal::displayInfo(stats.str().c_str());
+
+
+
+    MarchingCubes(fractalMesh, juliaSet, inputMesh.minVert, inputMesh.maxVert, portalMap);
 
     // Convert back to Maya MFnMesh
     MFnMesh outputMesh = fractalMesh.toMaya();

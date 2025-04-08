@@ -7,4 +7,4 @@
 #include "JuliaSet.h"
 #include "mesh.h"
 
-void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox);
+void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, PortalMap pm);

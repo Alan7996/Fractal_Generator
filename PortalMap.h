@@ -5,12 +5,25 @@
 #include "Quaternion/SETTINGS.h"
 
 class PortalMap {
+private:
+    MAT4 scaleMat = MAT4::Identity();
+    MAT4 rotMat = MAT4::Identity();
+    MAT4 tranMat = MAT4::Identity();
+    void setScaleMat(double sx, double sy, double sz);
+    void setRotMat(double rx, double ry, double rz);
+    void setTranMat(double tx, double ty, double tz);
+    void setTransformMat();
 public:
     PortalMap();
-    PortalMap(double radius, double scale);
+    PortalMap(double sx, double sy, double sz, double tx, double ty, double tz, double rx, double ry, double rz);
+
+
+
+
 
     VEC3F getFieldValue(const VEC3F& pos) const;
 
+    /*
     void addPortal(const VEC3F& center, const AngleAxis<Real>& rotation) {
         portalCenters.push_back(center);
         portalRotations.push_back(rotation);
@@ -28,10 +41,21 @@ public:
     Real getPortalRadius() const { return portalRadius; }
     
     Real getPortalScale() const { return portalScale; }
+    */
+
+    MAT4 getScaleMat() const { return scaleMat; }
+    MAT4 getRotMat() const { return rotMat; }
+    MAT4 getTranMat() const { return tranMat; }
+
+    MAT4 getTransformMat() const { return TransformMat; }
 
 
     std::vector<VEC3F>           portalCenters;
     std::vector<AngleAxis<Real>> portalRotations;
-    double  portalRadius;
-    double  portalScale;
+    //double  portalRadius;
+    //double  portalScale;
+
+    MAT4 TransformMat = MAT4::Identity();
+
+
 };

@@ -3,7 +3,7 @@
 
 JuliaSet::JuliaSet(int maxIter, double maxMag, const QUATERNION& c)
     : maxIterations(maxIter), maxMagnitude(maxMag), c(c) {
-    field = PortalMap();
+    pm = PortalMap();
 }
 
 
@@ -82,7 +82,22 @@ VEC3F JuliaSet::computeClosestPointOnMesh(const VEC3F& point) const {
         const VEC3F& v2 = inputMesh.vertices[idx2];
         const VEC3F& v3 = inputMesh.vertices[idx3];
 
-        VEC3F candidate = closestPointOnTriangle(point, v1, v2, v3);
+        VEC4F v14, v24, v34;
+        v14 << v1[0], v1[1], v1[2], 1.0;
+        v24 << v2[0], v2[1], v2[2], 1.0;
+        v34 << v3[0], v3[1], v3[2], 1.0;
+
+        VEC4F v14T = pm.getTransformMat() * v14;
+        VEC4F v24T = pm.getTransformMat() * v24;
+        VEC4F v34T = pm.getTransformMat() * v34;
+
+        VEC3F v1T, v2T, v3T;
+        v1T << v14T[0], v14T[1], v14T[2];
+        v2T << v24T[0], v24T[1], v24T[2];
+        v3T << v34T[0], v34T[1], v34T[2];
+
+
+        VEC3F candidate = closestPointOnTriangle(point, v1T, v2T, v3T);
         Real distance = (candidate - point).norm();
 
         if (distance < minDistance) {
@@ -170,7 +185,7 @@ Real JuliaSet::queryFieldValue(const VEC3F& point, double escapeRadius) const {
     Real blendFactor = 1.0;
 
     while (currMag < maxMagnitude && numIter < maxIterations) {
-        VEC3F newPos = field.getFieldValue(currPos);
+        VEC3F newPos = pm.getFieldValue(currPos);
         currPos = newPos;
         currMag = currPos.norm();
         ++numIter;

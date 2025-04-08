@@ -24,10 +24,35 @@ void Mesh::fromMaya(const MFnMesh& mayaMesh) {
         minVert = VEC3F(std::min(minVert[0], static_cast<double>(p.x)),
                         std::min(minVert[1], static_cast<double>(p.y)),
                         std::min(minVert[2], static_cast<double>(p.z)));
+
         maxVert = VEC3F(std::max(maxVert[0], static_cast<double>(p.x)),
                         std::max(maxVert[1], static_cast<double>(p.y)),
                         std::max(maxVert[2], static_cast<double>(p.z)));
+
+        /*
+        const MPoint& p = points_[i];
+        VEC3F pT = pm.getFieldValue(VEC3F(static_cast<float>(p.x),
+            static_cast<float>(p.y),
+            static_cast<float>(p.z)));
+        vertices.push_back(VEC3F(static_cast<float>(p.x),
+                                      static_cast<float>(p.y),
+                                      static_cast<float>(p.z)));
+        minVert = VEC3F(std::min(minVert[0], static_cast<double>(pT[0])),
+                        std::min(minVert[1], static_cast<double>(pT[1])),
+                        std::min(minVert[2], static_cast<double>(pT[2])));
+
+        maxVert = VEC3F(std::max(maxVert[0], static_cast<double>(pT[0])),
+                        std::max(maxVert[1], static_cast<double>(pT[1])),
+                        std::max(maxVert[2], static_cast<double>(pT[2])));
+        
+        */
+
     }
+
+
+
+
+
 
     // Retrieve normals from the Maya mesh
     MFloatVectorArray normals_;

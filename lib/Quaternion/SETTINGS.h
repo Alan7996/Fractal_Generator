@@ -16,6 +16,10 @@ typedef Matrix<Real, 3, 1 > VEC3F;
 typedef Matrix<Real, 4, 1 > VEC4F;
 typedef Matrix<int, 3, 1 > VEC3I;
 typedef Matrix<int, 1, 1 > VEC2I;
+
+typedef Matrix<Real, 4, 4> MAT4;
+
+
 typedef VectorXd VECTOR;
 
 #define MC_MAX_ROOTFINDING_ITERATIONS 100

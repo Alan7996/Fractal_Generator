@@ -27,14 +27,14 @@ public:
 	void setMaxIterations(int maxIter);
 	void setMaxMagnitude(double maxMag);
 
-	void setPortalMap(const PortalMap& map) { field = map; }
-	const PortalMap& getPortalMap() const { return field; }
+	void setPortalMap(const PortalMap& map) { pm = map; }
+	const PortalMap& getPortalMap() const { return pm; }
 
 private:
 	int maxIterations;
 	double maxMagnitude;
 	QUATERNION c;
-	PortalMap field;
+	PortalMap pm;
 
 	Mesh inputMesh;
 	bool hasMesh = false;
