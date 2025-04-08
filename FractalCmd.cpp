@@ -285,7 +285,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
 
 
 
-    MarchingCubes(fractalMesh, juliaSet, inputMesh.minVert, inputMesh.maxVert, portalMap);
+    MarchingCubes(fractalMesh, juliaSet, portalMap.getFieldValue(inputMesh.minVert), portalMap.getFieldValue(inputMesh.maxVert), portalMap);
 
     // Convert back to Maya MFnMesh
     MFnMesh outputMesh = fractalMesh.toMaya();

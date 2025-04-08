@@ -516,6 +516,9 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, PortalM
     //minBox = pm.getFieldValue(minBox);
     //maxBox = pm.getFieldValue(maxBox);
 
+    //minBox << -2, -2, -2;
+    //maxBox << 0, 0, 0;
+
     std::ostringstream stats;
     stats << "in Marching Cubes";
     stats << "minBox: (" << minBox[0] << ", " << minBox[1] << ", " << minBox[2] << ")";
@@ -560,25 +563,12 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, PortalM
                             (float)k / (float)NZ * zSpan + minBox[2]);
 
                 //apply tranformation matrix not correct
-                VEC3F newPt = pm.getFieldValue(point);
+                VEC3F newPt = pm.getInvFieldValue(point);
 
                 data[i][j][k] = js.queryFieldValue(newPt);
 			}
 		}
 	}
-
-    // debug after populating the 3D grid
-    double minValue = data[0][0][0];
-    double maxValue = data[0][0][0];
-    for (int i = 0; i < NX; i++) {
-        for (int j = 0; j < NY; j++) {
-            for (int k = 0; k < NZ; k++) {
-                minValue = std::min(minValue, data[i][j][k]);
-                maxValue = std::max(maxValue, data[i][j][k]);
-            }
-        }
-    }
-    std::cout << "Field value range: [" << minValue << ", " << maxValue << "]" << std::endl;
 
     // Perform marching cube for each voxel cube
     for (i=0;i<NX-1;i++) {

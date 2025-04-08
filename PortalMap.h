@@ -23,6 +23,8 @@ public:
 
     VEC3F getFieldValue(const VEC3F& pos) const;
 
+    VEC3F getInvFieldValue(const VEC3F& pos) const;
+
     /*
     void addPortal(const VEC3F& center, const AngleAxis<Real>& rotation) {
         portalCenters.push_back(center);

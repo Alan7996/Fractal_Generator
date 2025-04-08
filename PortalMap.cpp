@@ -5,8 +5,8 @@ PortalMap::PortalMap() {
     //portalRadius = 0.2;
     //portalScale = 0.8;
     setScaleMat(1.0, 1.0, 1.0);
-    setRotMat(0, 0, 0);
-    setTranMat(1.0, 1.0, 1.0);
+    setRotMat(90, 0, 0);
+    setTranMat(0.0, 0.0, 0.0);
     setTransformMat();
 
 }
@@ -66,6 +66,18 @@ VEC3F PortalMap::getFieldValue(const VEC3F& pos) const {
 
 
     VEC4F posNew = TransformMat * posWorld;
+
+    VEC3F posReturn;
+    posReturn << posNew[0], posNew[1], posNew[2];
+
+    return posReturn;
+}
+
+VEC3F PortalMap::getInvFieldValue(const VEC3F& pos) const {
+    VEC4F posWorld;
+    posWorld << pos[0], pos[1], pos[2], 1.0;
+
+    VEC4F posNew = TransformMat.inverse() * posWorld;
 
     VEC3F posReturn;
     posReturn << posNew[0], posNew[1], posNew[2];
