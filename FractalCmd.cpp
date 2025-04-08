@@ -178,7 +178,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
 
 
 
-    int maxIterations = 1;
+    int maxIterations = 2;
     double escapeRadius = 4.0;
     double cx = 0.0, cy = 0.5, cz = 0.0, cw = 0.0;
     int width = 50; 
@@ -276,21 +276,53 @@ MStatus FractalCmd::doIt(const MArgList& args)
     // Perform marching cubes
     Mesh fractalMesh;
 
+    VEC3F minBox, maxBox;
+
+    minBox = inputMesh.minVert;
+    maxBox = inputMesh.maxVert;
+    MAT4 Trans = portalMap.getTransformMat();
+
+
 
     std::ostringstream stats;
-    stats << "minBox: (" << inputMesh.minVert[0] << ", " << inputMesh.minVert[1] << ", " << inputMesh.minVert[2] << ")";
-    stats << "maxBox: (" << inputMesh.maxVert[0] << ", " << inputMesh.maxVert[1] << ", " << inputMesh.maxVert[2] << ")";
+    stats << "minBox: (" << minBox[0] << ", " << minBox[1] << ", " << minBox[2] << ")";
+    stats << "maxBox: (" << maxBox[0] << ", " << maxBox[1] << ", " << maxBox[2] << ")";
 
     MGlobal::displayInfo(stats.str().c_str());
 
+    for (int i = 1; i <= maxIterations; ++i) {
+        if (i == 1) {
+            minBox = portalMap.getFieldValue(minBox);
+            maxBox = portalMap.getFieldValue(maxBox);
 
+            MarchingCubes(fractalMesh, juliaSet, minBox, maxBox, portalMap);
+            MFnMesh outputMesh = fractalMesh.toMaya();
+        }
+        else {
 
-    MarchingCubes(fractalMesh, juliaSet, portalMap.getFieldValue(inputMesh.minVert), portalMap.getFieldValue(inputMesh.maxVert), portalMap);
+            minBox = portalMap.getFieldValue(minBox);
+            maxBox = portalMap.getFieldValue(maxBox);
+
+            MAT4 newTransMat = portalMap.getTransformMat() * Trans;
+            portalMap.TransformMat = newTransMat;
+            juliaSet.setPortalMap(portalMap);
+
+            std::ostringstream stats;
+            stats << "iter > 1";
+            stats << "minBox: (" << fractalMesh.minVert[0] << ", " << fractalMesh.minVert[1] << ", " << fractalMesh.minVert[2] << ")";
+            stats << "maxBox: (" << fractalMesh.maxVert[0] << ", " << fractalMesh.maxVert[1] << ", " << fractalMesh.maxVert[2] << ")";
+            MGlobal::displayInfo(stats.str().c_str());
+
+            MarchingCubes(fractalMesh, juliaSet, minBox, maxBox, portalMap);
+            MFnMesh outputMesh = fractalMesh.toMaya();
+        }
+    }
+
+    //MarchingCubes(fractalMesh, juliaSet, portalMap.getFieldValue(inputMesh.minVert), portalMap.getFieldValue(inputMesh.maxVert), portalMap);
 
     // Convert back to Maya MFnMesh
-    MFnMesh outputMesh = fractalMesh.toMaya();
-    //MFnMesh outputMesh = processedMesh.toMaya();
-    //MFnMesh outputMesh = inputMesh.toMaya();
+    //MFnMesh outputMesh = fractalMesh.toMaya();
+
 
 
     // should we add a check here?
