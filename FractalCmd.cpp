@@ -178,7 +178,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
 
 
 
-    int maxIterations = 2;
+    int maxIterations = 4;
     double escapeRadius = 4.0;
     double cx = 0.0, cy = 0.5, cz = 0.0, cw = 0.0;
     int width = 50; 
@@ -299,18 +299,60 @@ MStatus FractalCmd::doIt(const MArgList& args)
             MFnMesh outputMesh = fractalMesh.toMaya();
         }
         else {
+            
+            //minBox = portalMap.getFieldValue(minBox);
+            //maxBox = portalMap.getFieldValue(maxBox);
 
-            minBox = portalMap.getFieldValue(minBox);
-            maxBox = portalMap.getFieldValue(maxBox);
+            VEC4F minBoxHelper, maxBoxHelper;
+            minBoxHelper << minBox[0], minBox[1], minBox[2], 1.0;
+            maxBoxHelper << maxBox[0], maxBox[1], maxBox[2], 1.0;
+
+            // Apply the transformation matrix
+            minBoxHelper = Trans * minBoxHelper;
+            maxBoxHelper = Trans * maxBoxHelper;
+
+            minBox << minBoxHelper[0], minBoxHelper[1], minBoxHelper[2];
+            maxBox << maxBoxHelper[0], maxBoxHelper[1], maxBoxHelper[2];
+
+
+            //MAT4 scaleMat = portalMap.getScaleMat();
+            //MAT4 rotMat = portalMap.getRotMat();
+            //MAT4 tranMat = portalMap.getTranMat();
 
             MAT4 newTransMat = portalMap.getTransformMat() * Trans;
+
+            std::ostringstream matrixStr1;
+            matrixStr1 << "Pevious Trans:\n";
+            for (int row = 0; row < 4; row++) {
+                matrixStr1 << "[ ";
+                for (int col = 0; col < 4; col++) {
+                    matrixStr1 << portalMap.TransformMat(row, col);
+                    if (col < 3) matrixStr1 << ", ";
+                }
+                matrixStr1 << " ]\n";
+            }
+            MGlobal::displayInfo(matrixStr1.str().c_str());
+
             portalMap.TransformMat = newTransMat;
             juliaSet.setPortalMap(portalMap);
 
+
+            std::ostringstream matrixStr;
+            matrixStr << "newTransMat:\n";
+            for (int row = 0; row < 4; row++) {
+                matrixStr << "[ ";
+                for (int col = 0; col < 4; col++) {
+                    matrixStr << newTransMat(row, col);
+                    if (col < 3) matrixStr << ", ";
+                }
+                matrixStr << " ]\n";
+            }
+            MGlobal::displayInfo(matrixStr.str().c_str());
+
             std::ostringstream stats;
-            stats << "iter > 1";
-            stats << "minBox: (" << fractalMesh.minVert[0] << ", " << fractalMesh.minVert[1] << ", " << fractalMesh.minVert[2] << ")";
-            stats << "maxBox: (" << fractalMesh.maxVert[0] << ", " << fractalMesh.maxVert[1] << ", " << fractalMesh.maxVert[2] << ")";
+            stats << "iter > 1: " << i << " ";
+            stats << "minBox: (" << minBox[0] << ", " << minBox[1] << ", " << minBox[2] << ")";
+            stats << "maxBox: (" << maxBox[0] << ", " << maxBox[1] << ", " << maxBox[2] << ")";
             MGlobal::displayInfo(stats.str().c_str());
 
             MarchingCubes(fractalMesh, juliaSet, minBox, maxBox, portalMap);

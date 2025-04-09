@@ -4,9 +4,9 @@
 PortalMap::PortalMap() {
     //portalRadius = 0.2;
     //portalScale = 0.8;
-    setScaleMat(0.75, 1.0, 1.0);
-    setRotMat(0, 90, 0);
-    setTranMat(0.0, 0.0, 1.0);
+    setScaleMat(0.8, 0.8, 0.8);
+    setRotMat(0, 0, 90);
+    setTranMat(0.0, -1.8, 0.0);
     setTransformMat();
 
 }

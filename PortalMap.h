@@ -9,10 +9,7 @@ private:
     MAT4 scaleMat = MAT4::Identity();
     MAT4 rotMat = MAT4::Identity();
     MAT4 tranMat = MAT4::Identity();
-    void setScaleMat(double sx, double sy, double sz);
-    void setRotMat(double rx, double ry, double rz);
-    void setTranMat(double tx, double ty, double tz);
-    void setTransformMat();
+
 public:
     PortalMap();
     PortalMap(double sx, double sy, double sz, double tx, double ty, double tz, double rx, double ry, double rz);
@@ -24,6 +21,11 @@ public:
     VEC3F getFieldValue(const VEC3F& pos) const;
 
     VEC3F getInvFieldValue(const VEC3F& pos) const;
+
+    void setTranMat(double tx, double ty, double tz);
+    void setTransformMat();
+    void setScaleMat(double sx, double sy, double sz);
+    void setRotMat(double rx, double ry, double rz);
 
     /*
     void addPortal(const VEC3F& center, const AngleAxis<Real>& rotation) {
