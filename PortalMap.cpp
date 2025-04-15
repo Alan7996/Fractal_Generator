@@ -6,11 +6,15 @@ PortalMap::PortalMap() {
     //portalRadius = 0.2;
     //portalScale = 0.8;
     MAT4 scaleMat, rotMat, transMat;
-    setScaleMat(&scaleMat, 0.8, 0.8, 0.8);
+    setScaleMat(&scaleMat, 0.5, 0.5, 0.5);
     setRotMat(&rotMat, 0, 0, 90);
     setTransMat(&transMat, 0.0, -1.8, 0.0);
     createTransformMat(scaleMat, rotMat, transMat);
 
+    setScaleMat(&scaleMat, 1.5, 1.5, 1.5);
+    setRotMat(&rotMat, 0, 0, 45);
+    setTransMat(&transMat, 0.0, 2.5, 0.0);
+    createTransformMat(scaleMat, rotMat, transMat);
 }
 
 PortalMap::PortalMap(double sx, double sy, double sz, double tx, double ty, double tz, double rx, double ry, double rz) {
@@ -27,7 +31,6 @@ void PortalMap::setScaleMat(MAT4* mat, double sx, double sy, double sz) {
     mat->col(1) << 0.0, sy, 0.0, 0.0;
     mat->col(2) << 0.0, 0.0, sz, 0.0;
     mat->col(3) << 0.0, 0.0, 0.0, 1.0;
-
 }
 
 void PortalMap::setRotMat(MAT4* mat, double rx, double ry, double rz) {

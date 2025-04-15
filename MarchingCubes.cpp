@@ -4,9 +4,9 @@
 
 #include "Quaternion/SETTINGS.h"
 
-#define NX 50
-#define NY 50
-#define NZ 50
+#define NX 30
+#define NY 30
+#define NZ 30
 
 typedef struct {
     double x,y,z;

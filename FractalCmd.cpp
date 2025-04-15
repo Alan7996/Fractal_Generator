@@ -13,6 +13,8 @@
 #include "mesh.h"
 #include "PortalMap.h"
 
+#define BBOX_SIZE 8
+
 FractalCmd::FractalCmd() : MPxCommand()
 {
 }
@@ -85,28 +87,46 @@ MStatus FractalCmd::doIt(const MArgList& args)
     // Perform marching cubes
     Mesh fractalMesh;
 
-    VEC3F minBox, maxBox;
-    minBox = inputMesh.minVert - VEC3F(alpha, alpha, alpha);
-    maxBox = inputMesh.maxVert + VEC3F(alpha, alpha, alpha);
-    
+    auto getBboxMinMax = [](VEC3F bbox[BBOX_SIZE], VEC3F* minVert, VEC3F* maxVert) {
+        *minVert = bbox[0];
+        *maxVert = bbox[0];
+        for (size_t i = 1; i < BBOX_SIZE; ++i) {
+            *minVert = VEC3F(min((*minVert)[0], bbox[i][0]), min((*minVert)[1], bbox[i][1]), min((*minVert)[2], bbox[i][2]));
+            *maxVert = VEC3F(max((*maxVert)[0], bbox[i][0]), max((*maxVert)[1], bbox[i][1]), max((*maxVert)[2], bbox[i][2]));
+        }
+    };
+
+    VEC3F bbox[BBOX_SIZE] = {
+        VEC3F(inputMesh.minVert[0] - alpha, inputMesh.minVert[1] - alpha, inputMesh.minVert[2] - alpha),
+        VEC3F(inputMesh.minVert[0] - alpha, inputMesh.minVert[1] - alpha, inputMesh.maxVert[2] + alpha),
+        VEC3F(inputMesh.minVert[0] - alpha, inputMesh.maxVert[1] + alpha, inputMesh.minVert[2] - alpha),
+        VEC3F(inputMesh.maxVert[0] + alpha, inputMesh.minVert[1] - alpha, inputMesh.minVert[2] - alpha),
+        VEC3F(inputMesh.minVert[0] - alpha, inputMesh.maxVert[1] + alpha, inputMesh.maxVert[2] + alpha),
+        VEC3F(inputMesh.maxVert[0] + alpha, inputMesh.minVert[1] - alpha, inputMesh.maxVert[2] + alpha),
+        VEC3F(inputMesh.maxVert[0] + alpha, inputMesh.maxVert[1] + alpha, inputMesh.minVert[2] - alpha),
+        VEC3F(inputMesh.maxVert[0] + alpha, inputMesh.maxVert[1] + alpha, inputMesh.maxVert[2] + alpha)
+    };
+
+    VEC3F minBoxIter, maxBoxIter;
+    VEC3F currBbox[8];
     for (size_t portalIdx = 0; portalIdx < juliaSet.pm.portalTransforms.size(); ++portalIdx) {
-        VEC4F minBoxIter, maxBoxIter;
         for (int i = 1; i <= maxIterations; ++i) {
             if (i == 1) {
-                minBox = juliaSet.pm.getFieldValue(minBox, portalIdx, i);
-                maxBox = juliaSet.pm.getFieldValue(maxBox, portalIdx, i);
-
-                minBoxIter << minBox[0], minBox[1], minBox[2], 1.0;
-                maxBoxIter << maxBox[0], maxBox[1], maxBox[2], 1.0;
+                for (size_t cornerIdx = 0; cornerIdx < BBOX_SIZE; ++cornerIdx) {
+                    currBbox[cornerIdx] = juliaSet.pm.getFieldValue(bbox[cornerIdx], portalIdx, i);
+                }
+                getBboxMinMax(currBbox, &minBoxIter, &maxBoxIter);
             
-                MarchingCubes(fractalMesh, juliaSet, minBox, maxBox, portalIdx, i);
+                MarchingCubes(fractalMesh, juliaSet, minBoxIter, maxBoxIter, portalIdx, i);
                 MFnMesh outputMesh = fractalMesh.toMaya();
                 continue;
             }
 
-            // Apply the transformation matrix iteratively
-            minBoxIter = juliaSet.pm.getTransformMat(portalIdx) * minBoxIter;
-            maxBoxIter = juliaSet.pm.getTransformMat(portalIdx) * maxBoxIter;
+            for (size_t cornerIdx = 0; cornerIdx < BBOX_SIZE; ++cornerIdx) {
+                // Apply the transformation matrix iteratively through parameter i
+                currBbox[cornerIdx] = juliaSet.pm.getFieldValue(bbox[cornerIdx], portalIdx, i);
+            }
+            getBboxMinMax(currBbox, &minBoxIter, &maxBoxIter);
 
             MarchingCubes(fractalMesh, juliaSet, {minBoxIter[0], minBoxIter[1], minBoxIter[2]}, {maxBoxIter[0], maxBoxIter[1], maxBoxIter[2]}, portalIdx, i);
             MFnMesh outputMesh = fractalMesh.toMaya();
