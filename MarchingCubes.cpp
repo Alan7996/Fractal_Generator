@@ -519,46 +519,46 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, size_t 
 
     MGlobal::displayInfo(stats.str().c_str());
 
-	data.resize(NX);
-	for (i=0;i<NX;i++) {
+	data.resize(NX+1);
+	for (i=0;i<=NX;i++) {
         std::vector<std::vector<double>> tempYZ;
-        tempYZ.resize(NY);
+        tempYZ.resize(NY+1);
         data[i] = tempYZ;
     }
-	for (i=0;i<NX;i++) {
-		for (j=0;j<NY;j++) {
+	for (i=0;i<=NX;i++) {
+		for (j=0;j<=NY;j++) {
             std::vector<double> tempZ;
-            tempZ.resize(NZ);
+            tempZ.resize(NZ+1);
             data[i][j] = tempZ;
         }
     }
 
-    // Adjust min and max box sizes to account for half box diff
+    // Adjust min and max box sizes to account for full box diff
     float xSpan = maxBox[0] - minBox[0];
     float ySpan = maxBox[1] - minBox[1];
     float zSpan = maxBox[2] - minBox[2];
-    minBox[0] -= xSpan / (float)NX;
-    maxBox[0] += xSpan / (float)NX;
-    minBox[1] -= ySpan / (float)NY;
-    maxBox[1] += ySpan / (float)NY;
-    minBox[2] -= zSpan / (float)NZ;
-    maxBox[2] += zSpan / (float)NZ;
+    minBox[0] -= 2.0 * xSpan / (float)NX;
+    maxBox[0] += 2.0 * xSpan / (float)NX;
+    minBox[1] -= 2.0 * ySpan / (float)NY;
+    maxBox[1] += 2.0 * ySpan / (float)NY;
+    minBox[2] -= 2.0 * zSpan / (float)NZ;
+    maxBox[2] += 2.0 * zSpan / (float)NZ;
     xSpan = maxBox[0] - minBox[0];
     ySpan = maxBox[1] - minBox[1];
     zSpan = maxBox[2] - minBox[2];
 
     // Populate a 3D grid of Julia set field queries
-	for (k=0;k<NZ;k++) {
-		for (j=0;j<NY;j++) {
-			for (i=0;i<NX;i++) {
+	for (k=0;k<=NZ;k++) {
+		for (j=0;j<=NY;j++) {
+			for (i=0;i<=NX;i++) {
                 VEC3F point((float)i / (float)NX * xSpan + minBox[0],
                             (float)j / (float)NY * ySpan + minBox[1],
                             (float)k / (float)NZ * zSpan + minBox[2]);
 
-                //apply tranformation matrix not correct
-                VEC3F newPt = js.pm.getInvFieldValue(point, idx, num_iter);
+                // Extract equivalent point in the original mesh
+                VEC3F origPt = js.pm.getInvFieldValue(point, idx, num_iter);
 
-                data[i][j][k] = js.queryFieldValue(newPt, idx, num_iter);
+                data[i][j][k] = js.queryFieldValue(origPt, idx, num_iter);
 			}
 		}
 	}

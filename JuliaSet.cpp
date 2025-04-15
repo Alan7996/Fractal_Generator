@@ -134,7 +134,7 @@ bool rayIntersectsTriangle(const VEC3F& origin, const VEC3F& dir,
 bool JuliaSet::isPointInsideMesh(const VEC3F& point) const {
     VEC3F rayDir = VEC3F(1.0f, 0.5f, 0.25f); // Avoid axis-aligned
     rayDir.normalize();
-    VEC3F origin = point + rayDir * 1e-4f;   // Offset origin slightly
+    VEC3F origin = point + rayDir * 1e-3f;   // Offset origin slightly
 
     int intersectionCount = 0;
 

@@ -46,13 +46,7 @@ void Mesh::fromMaya(const MFnMesh& mayaMesh) {
                         std::max(maxVert[2], static_cast<double>(pT[2])));
         
         */
-
     }
-
-
-
-
-
 
     // Retrieve normals from the Maya mesh
     MFloatVectorArray normals_;
