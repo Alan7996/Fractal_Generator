@@ -13,9 +13,8 @@ public:
 	MObject material;
 	VEC3F minVert;
 	VEC3F maxVert;
-	PortalMap pm = PortalMap();
-
-
+	
 	void fromMaya(const MFnMesh& mayaMesh);
 	MObject toMaya() const;
+	void copyMaterial(const MObject material_) { material = material_; };
 };

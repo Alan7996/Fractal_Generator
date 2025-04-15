@@ -95,6 +95,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
 
     // Perform marching cubes
     Mesh fractalMesh;
+    fractalMesh.copyMaterial(inputMesh.material);
 
     auto getBboxMinMax = [](VEC3F bbox[BBOX_SIZE], VEC3F* minVert, VEC3F* maxVert) {
         *minVert = bbox[0];
