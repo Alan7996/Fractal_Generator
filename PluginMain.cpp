@@ -25,36 +25,52 @@ void createSelectionUI(MStatus* status) {
                 deleteUI mySelectionWindow;
             }
             
-            window -title "Select Object" -widthHeight 300 100 mySelectionWindow;
+            window -title "Fractal Generator" -resizeToFitChildren true mySelectionWindow;
             columnLayout -adjustableColumn true;
             textFieldButtonGrp -label "Selected Object: " -buttonLabel "Select" 
                 -bc ("updateSelectionField") mySelectionField;
+            
+            // Alpha, Beta, Versor Scale sliders
+            floatSliderGrp -label "Noise Scale" -field true -minValue 0 -maxValue 1.0 -value 0.05 -step 0.0001 -precision 4 myAlphaSlider;
+            floatSliderGrp -label "Noise Offset" -field true -minValue 0 -maxValue 10 -value 0.0 -step 0.01 -precision 2 myBetaSlider;
+            floatSliderGrp -label "Versor Scale" -field true -minValue 0 -maxValue 10 -value 9.0 -step 0.01 -precision 2 myVersorScaleSlider;
 
-        button - label "Generate" - command ("onGeneratePressed");
+            // Versor Octave slider (unsigned int 0–8)
+            intSliderGrp -label "Versor Octave" -field true -minValue 0 -maxValue 8 -value 1 myVersorOctaveSlider;
 
-        showWindow mySelectionWindow;
-    }
+            intSliderGrp -label "Iterations" -field true -minValue 1 -maxValue 8 -value 2 myNumIterationSlider;
 
-    global proc updateSelectionField() {
-        string $selection[] = `ls - sl`;
-            if (size($selection) > 0) {
-                textFieldButtonGrp - e - text $selection[0] mySelectionField;
-            }
-            else {
-                warning "No object selected. Please select an object.";
-            }
-    }
+            button - label "Generate" - command ("onGeneratePressed");
 
-    global proc onGeneratePressed() {
-        string $selectedObject = `textFieldButtonGrp - q - text mySelectionField`;
-        if ($selectedObject == "") {
-            warning "No object selected. Please select an object before generating.";
-        } else {
-            string $cmd = "FractalCmd \"" + $selectedObject + "\"";
-            print("Executing: " + $cmd + "\n");
-            eval($cmd);
+            showWindow mySelectionWindow;
         }
-    }
+
+        global proc updateSelectionField() {
+            string $selection[] = `ls - sl`;
+                if (size($selection) > 0) {
+                    textFieldButtonGrp - e - text $selection[0] mySelectionField;
+                }
+                else {
+                    warning "No object selected. Please select an object.";
+                }
+        }
+
+        global proc onGeneratePressed() {
+            string $selectedObject = `textFieldButtonGrp - q - text mySelectionField`;
+            if ($selectedObject == "") {
+                warning "No object selected. Please select an object before generating.";
+            } else {
+                float $alpha = `floatSliderGrp -q -value myAlphaSlider`;
+                float $beta = `floatSliderGrp -q -value myBetaSlider`;
+                float $versorScale = `floatSliderGrp -q -value myVersorScaleSlider`;
+                int $versorOctave = `intSliderGrp -q -value myVersorOctaveSlider`;
+                int $numIterations = `intSliderGrp -q -value myNumIterationSlider`;
+
+                string $cmd = "FractalCmd \"" + $selectedObject + "\" " + $alpha + " " + $beta + " " + $versorScale + " " + $versorOctave + " " + $numIterations;
+                print("Executing: " + $cmd + "\n");
+                eval($cmd);
+            }
+        }
     )";
 
     *status = MGlobal::executeCommand(melCreateSelectionUI);

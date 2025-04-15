@@ -10,7 +10,7 @@
 
 class JuliaSet {
 public:
-	JuliaSet(int maxIter, double maxMag, double alpha_, double beta_, const QUATERNION& c, Versor versor);
+	JuliaSet(unsigned int maxIter, double maxMag, double alpha_, double beta_, const QUATERNION& c, Versor versor);
 
 	// Returns whether the point is in the Julia set (false)
 	Real queryFieldValue(const VEC3F& point, double escapeRadius = 4.0, size_t idx = 0, size_t num_iter = 1) const;

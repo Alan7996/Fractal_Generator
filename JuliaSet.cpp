@@ -1,7 +1,7 @@
 #include "JuliaSet.h"
 #include <cmath>
 
-JuliaSet::JuliaSet(int maxIter = 10, double maxMag = 4.0, double alpha_ = 1.0, double beta_ = 0.0, const QUATERNION& c = QUATERNION(0.0, 0.5, 0.0, 0.0), Versor versor = Versor())
+JuliaSet::JuliaSet(unsigned int maxIter = 10u, double maxMag = 4.0, double alpha_ = 1.0, double beta_ = 0.0, const QUATERNION& c = QUATERNION(0.0, 0.5, 0.0, 0.0), Versor versor = Versor())
     : maxIterations(maxIter), maxMagnitude(maxMag), alpha(alpha_), beta(beta_), c(c), noise(versor) {
     pm = PortalMap();
 }
@@ -168,7 +168,7 @@ Real JuliaSet::computeSignedDistanceToMesh(const VEC3F& point, size_t idx, size_
 Real JuliaSet::queryFieldValue(const VEC3F& point, double escapeRadius, size_t idx, size_t num_iter) const {
     // Perturb the current position by perlin noise. Approximately simulating 
     // perturbed mesh surface without actually editing the mesh.
-    VEC3F currPos = point + alpha * noise.getFieldValue(point);;
+    VEC3F currPos = point + alpha * noise.getFieldValue(point + VEC3F(beta, beta, beta));
     // Calculate signed distance to mesh
     return computeSignedDistanceToMesh(currPos, idx, num_iter);
 }

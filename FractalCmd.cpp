@@ -41,23 +41,32 @@ MStatus FractalCmd::doIt(const MArgList& args)
 	// message in scriptor editor
 	MGlobal::displayInfo("FractalCmd");
 
-    int maxIterations = 2;
     double escapeRadius = 4.0;
     double cx = 0.0, cy = 0.5, cz = 0.0, cw = 0.0;
-    int width = 50; 
-    int height = 25; 
-    double scale = 0.05;
+
     double alpha = 0.05;
     double beta = 0.0;
-    unsigned int versorOctave = 1u;
     double versorScale = 9.0;
-
-	if (args.length() != 1) {
-        MGlobal::displayError("FractalCmd requires a single argument: the name of the selected mesh.");
-        return MStatus::kFailure;
-    }
+    unsigned int versorOctave = 1u;
+    unsigned int maxIterations = 2;
 
     MString meshName = args.asString(0);
+    alpha = args.asDouble(1);
+    beta = args.asDouble(2);
+    versorScale = args.asDouble(3);
+    versorOctave = static_cast<unsigned int>(args.asInt(4));
+    maxIterations = static_cast<unsigned int>(args.asInt(5));
+    
+    // Validate ranges (clamp if necessary)
+    if (alpha < 0.0) alpha = 0.0;
+    if (alpha > 10.0) alpha = 10.0;
+    if (beta < 0.0) beta = 0.0;
+    if (beta > 10.0) beta = 10.0;
+    if (versorScale < 0.0) versorScale = 0.0;
+    if (versorScale > 10.0) versorScale = 10.0;
+    if (versorOctave > 8u) versorOctave = 8u;
+    if (maxIterations > 8u) maxIterations = 8u;
+
     MSelectionList selection;
     MDagPath dagPath;
 
@@ -110,7 +119,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
     VEC3F minBoxIter, maxBoxIter;
     VEC3F currBbox[8];
     for (size_t portalIdx = 0; portalIdx < juliaSet.pm.portalTransforms.size(); ++portalIdx) {
-        for (int i = 1; i <= maxIterations; ++i) {
+        for (unsigned int i = 1; i <= maxIterations; ++i) {
             if (i == 1) {
                 for (size_t cornerIdx = 0; cornerIdx < BBOX_SIZE; ++cornerIdx) {
                     currBbox[cornerIdx] = juliaSet.pm.getFieldValue(bbox[cornerIdx], portalIdx, i);
