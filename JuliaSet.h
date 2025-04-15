@@ -10,7 +10,7 @@
 
 class JuliaSet {
 public:
-	JuliaSet(int maxIter = 10, double maxMag = 4.0, const QUATERNION& c = QUATERNION(0.0, 0.5, 0.0, 0.0));
+	JuliaSet(int maxIter, double maxMag, double alpha_, double beta_, const QUATERNION& c, Versor versor);
 
 	// Returns whether the point is in the Julia set (false)
 	Real queryFieldValue(const VEC3F& point, double escapeRadius = 4.0) const;
@@ -35,10 +35,12 @@ private:
 	double maxMagnitude;
 	QUATERNION c;
 	PortalMap pm;
+	Versor noise;
 
 	Mesh inputMesh;
 	bool hasMesh = false;
 
 	double boundary_threshold = 1.0;
 	double scale_factor = 2.0;
+	double alpha, beta;
 };

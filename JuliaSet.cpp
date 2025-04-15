@@ -1,11 +1,10 @@
 #include "JuliaSet.h"
 #include <cmath>
 
-JuliaSet::JuliaSet(int maxIter, double maxMag, const QUATERNION& c)
-    : maxIterations(maxIter), maxMagnitude(maxMag), c(c) {
+JuliaSet::JuliaSet(int maxIter = 10, double maxMag = 4.0, double alpha_ = 1.0, double beta_ = 0.0, const QUATERNION& c = QUATERNION(0.0, 0.5, 0.0, 0.0), Versor versor = Versor())
+    : maxIterations(maxIter), maxMagnitude(maxMag), alpha(alpha_), beta(beta_), c(c), noise(versor) {
     pm = PortalMap();
 }
-
 
 void JuliaSet::setInputMesh(const Mesh& mesh) {
     // Store the input mesh for distance field calculations
@@ -167,28 +166,11 @@ Real JuliaSet::computeSignedDistanceToMesh(const VEC3F& point) const {
 }
 
 Real JuliaSet::queryFieldValue(const VEC3F& point, double escapeRadius) const {
-
-    VEC3F currPos = point;
-    Real currMag = currPos.norm();
-    int numIter = 0;
-    // Compute distance to mesh (if available)
-    VEC3F closestPoint = computeClosestPointOnMesh(point);
-
-    // Blend the distance field with the Julia set
-    Real blendFactor = 1.0;
-
-    while (currMag < maxMagnitude && numIter < maxIterations) {
-        VEC3F newPos = pm.getInvFieldValue(currPos);
-        currPos = newPos;
-        currMag = currPos.norm();
-        ++numIter;
-    }
-
+    // Perturb the current position by perlin noise. Approximately simulating 
+    // perturbed mesh surface without actually editing the mesh.
+    VEC3F currPos = point + alpha * noise.getFieldValue(point);;
     // Calculate signed distance to mesh
-    Real distanceValue = computeSignedDistanceToMesh(point);
-
-    // Return normalized value ensuring values span across 0.5
-    return distanceValue;
+    return computeSignedDistanceToMesh(currPos);
 }
 
 // input output vex 
@@ -197,7 +179,6 @@ QUATERNION JuliaSet::applyIteration(const QUATERNION& point) const {
     result.juliaIteration(c);
     return result;
 }
-
 
 void JuliaSet::setQuaternionC(const QUATERNION& newC) {
     c = newC;

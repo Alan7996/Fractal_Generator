@@ -13,11 +13,7 @@ private:
 public:
     PortalMap();
     PortalMap(double sx, double sy, double sz, double tx, double ty, double tz, double rx, double ry, double rz);
-
-
-
-
-
+    
     VEC3F getFieldValue(const VEC3F& pos) const;
 
     VEC3F getInvFieldValue(const VEC3F& pos) const;

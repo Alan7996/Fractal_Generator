@@ -21,138 +21,6 @@ FractalCmd::~FractalCmd()
 {
 }
 
-void visualizeJuliaSet(const JuliaSet& juliaSet, int width, int height, double scale) {
-
-    std::vector<std::vector<double>> values(height, std::vector<double>(width, 0.0));
-
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-
-            double xPos = (x - width / 2.0) * scale;
-            double yPos = (y - height / 2.0) * scale;
-
-            VEC3F point(xPos, yPos, 0.0);
-
-            double value = juliaSet.queryFieldValue(point);
-
-            values[y][x] = value;
-        }
-    }
-
-    double minVal = values[0][0];
-    double maxVal = values[0][0];
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            minVal = std::min(minVal, values[y][x]);
-            maxVal = std::max(maxVal, values[y][x]);
-        }
-    }
-
-    std::ostringstream oss;
-    oss << "Julia Set Visualization (" << width << "x" << height << "):\n";
-
-    oss << "+";
-    for (int x = 0; x < width; x++) {
-        oss << "-";
-    }
-    oss << "+\n";
-
-    for (int y = 0; y < height; y++) {
-        oss << "|";
-        for (int x = 0; x < width; x++) {
-
-            double normalized = (values[y][x] - minVal) / (maxVal - minVal);
-
-
-            const char* chars = " .,;:+*#";
-            int numChars = 8;
-            int index = (int)(normalized * (numChars - 1));
-            index = std::max(0, std::min(numChars - 1, index));
-
-            oss << chars[index];
-        }
-        oss << "|\n";
-    }
-
-    oss << "+";
-    for (int x = 0; x < width; x++) {
-        oss << "-";
-    }
-    oss << "+\n";
-
-    MGlobal::displayInfo(oss.str().c_str());
-
-    oss.str("");
-    oss << "Value range: [" << minVal << ", " << maxVal << "]";
-    MGlobal::displayInfo(oss.str().c_str());
-}
-
-void visualizeVersorField(const VersorMap& versorMap, int width, int height, double scale) {
-    MGlobal::displayInfo("Versor Field Visualization (" + MString() + width + "x" + height + "):");
-
-    // Top border
-    std::string topBorder = "+";
-    for (int x = 0; x < width; x++) {
-        topBorder += "-";
-    }
-    topBorder += "+";
-    MGlobal::displayInfo(topBorder.c_str());
-
-    const char* directions = "^/>v\\<";
-
-    // Generate and output one line at a time
-    for (int y = 0; y < height; y++) {
-        std::string line = "|";
-
-        for (int x = 0; x < width; x++) {
-            double xPos = (x - width / 2.0) * scale;
-            double yPos = (y - height / 2.0) * scale;
-
-            VEC3F point(xPos, yPos, 0.0);
-
-            VEC3F fieldVector = versorMap.getFieldValue(point);
-
-            double magnitude = fieldVector.norm();
-
-            if (magnitude < 1e-6) {
-                line += " ";
-                continue;
-            }
-
-            double angle = atan2(fieldVector[1], fieldVector[0]);
-
-            // Map angle to 6 directions (^, /, >, \, v, <)
-            // Convert angle from [-pi, pi] to [0, 2pi]
-            double normalizedAngle = angle;
-            if (normalizedAngle < 0) normalizedAngle += 2 * M_PI;
-
-            int index = static_cast<int>(normalizedAngle / (2 * M_PI / 6)) % 6;
-
-            line += directions[index];
-        }
-
-        line += "|";
-        MGlobal::displayInfo(line.c_str());
-    }
-
-
-    MGlobal::displayInfo(topBorder.c_str());
-
-    std::ostringstream stats;
-
-    VEC3F center(0, 0, 0);
-    VEC3F samplePoint(scale, scale, 0);
-
-    VEC3F centerValue = versorMap.getFieldValue(center);
-    VEC3F sampleValue = versorMap.getFieldValue(samplePoint);
-
-    stats << "Field samples: ";
-    stats << "Center: (" << centerValue[0] << ", " << centerValue[1] << ", " << centerValue[2] << "), ";
-    stats << "Sample: (" << sampleValue[0] << ", " << sampleValue[1] << ", " << sampleValue[2] << ")";
-
-    MGlobal::displayInfo(stats.str().c_str());
-}
-
 PortalMap extractPortalsFromMesh(const MFnMesh& mayaMesh) {
     // This function extracts portal information from a Maya mesh
     // as described in the design document section 2.1.1 Algorithm Details
@@ -163,50 +31,24 @@ PortalMap extractPortalsFromMesh(const MFnMesh& mayaMesh) {
     MPointArray points;
     mayaMesh.getPoints(points, MSpace::kObject);
 
-
     return portalMap;
 }
-
-
 
 MStatus FractalCmd::doIt(const MArgList& args)
 {
 	// message in scriptor editor
 	MGlobal::displayInfo("FractalCmd");
 
-
-
-
-
-    int maxIterations = 4;
+    int maxIterations = 2;
     double escapeRadius = 4.0;
     double cx = 0.0, cy = 0.5, cz = 0.0, cw = 0.0;
     int width = 50; 
     int height = 25; 
     double scale = 0.05;
-
-
-
-
-    /*
-    std::ostringstream oss;
-    oss << "Julia Set Parameters:" << std::endl;
-    oss << "  Iterations: " << maxIterations << std::endl;
-    oss << "  Escape Radius: " << escapeRadius << std::endl;
-    oss << "  c = (" << cx << ", " << cy << ", " << cz << ", " << cw << ")" << std::endl;
-    MGlobal::displayInfo(oss.str().c_str());
-
-    visualizeJuliaSet(juliaSet, width, height, scale);
-
-    visualizeVersorField(versorMap, width, height, scale);
-    */
-
-
-
-
-
-
-
+    double alpha = 0.05;
+    double beta = 0.0;
+    unsigned int versorOctave = 1u;
+    double versorScale = 9.0;
 
 	if (args.length() != 1) {
         MGlobal::displayError("FractalCmd requires a single argument: the name of the selected mesh.");
@@ -229,152 +71,54 @@ MStatus FractalCmd::doIt(const MArgList& args)
     Mesh inputMesh;
     inputMesh.fromMaya(mayaMesh);
 
-    // Read portal data and construct PortalMap instance
-    // PortalMap pm = (...);
-    PortalMap portalMap = PortalMap();
-
-    // Display portal map info
-    std::ostringstream portalInfo;
-    portalInfo << "Extracted " << portalMap.portalCenters.size() << " portals from mesh:" << std::endl;
-    for (size_t i = 0; i < portalMap.portalCenters.size(); i++) {
-        const VEC3F& center = portalMap.portalCenters[i];
-        portalInfo << "  Portal " << i << ": Center ("
-            << center[0] << ", " << center[1] << ", " << center[2] << ")" << std::endl;
-        portalInfo << "  Rotation angle: " << portalMap.portalRotations[i].angle() << std::endl;
-    }
-
-    MGlobal::displayInfo(portalInfo.str().c_str());
-
+    // Set up versor field. The seed values are from the authors.
+    Versor versor = Versor(83888u, 39388u, 17474u, versorOctave, versorScale);
 
     // Construct Julia Set with the PortalMap
+    PortalMap portalMap = PortalMap();
     QUATERNION juliaC(cw, cx, cy, cz);
-    JuliaSet juliaSet(maxIterations, escapeRadius, juliaC);
+    JuliaSet juliaSet(maxIterations, escapeRadius, alpha, beta, juliaC, versor);
 
     juliaSet.setInputMesh(inputMesh);
     juliaSet.setPortalMap(portalMap);
-
-    // Display Julia Set parameters
-    std::ostringstream oss;
-    oss << "Julia Set Parameters:" << std::endl;
-    oss << "  Iterations: " << maxIterations << std::endl;
-    oss << "  Escape Radius: " << escapeRadius << std::endl;
-    oss << "  c = (" << cx << ", " << cy << ", " << cz << ", " << cw << ")" << std::endl;
-    MGlobal::displayInfo(oss.str().c_str());
-
-    // Visualize the Julia Set
-    visualizeJuliaSet(juliaSet, width, height, scale);
-
-    // Set up versor field
-    Versor versor;
-    Modulus modulus;
-    VersorMap versorMap(versor, modulus);
-    visualizeVersorField(versorMap, width, height, scale);
-
-
-    // Generate fractal meshes
 
     // Perform marching cubes
     Mesh fractalMesh;
 
     VEC3F minBox, maxBox;
-
-    minBox = inputMesh.minVert;
-    maxBox = inputMesh.maxVert;
+    minBox = inputMesh.minVert - VEC3F(alpha, alpha, alpha);
+    maxBox = inputMesh.maxVert + VEC3F(alpha, alpha, alpha);
     MAT4 Trans = portalMap.getTransformMat();
-
-
-
-    std::ostringstream stats;
-    stats << "minBox: (" << minBox[0] << ", " << minBox[1] << ", " << minBox[2] << ")";
-    stats << "maxBox: (" << maxBox[0] << ", " << maxBox[1] << ", " << maxBox[2] << ")";
-
-    MGlobal::displayInfo(stats.str().c_str());
 
     for (int i = 1; i <= maxIterations; ++i) {
         if (i == 1) {
             minBox = portalMap.getFieldValue(minBox);
             maxBox = portalMap.getFieldValue(maxBox);
-
+        
             MarchingCubes(fractalMesh, juliaSet, minBox, maxBox, portalMap);
             MFnMesh outputMesh = fractalMesh.toMaya();
+            continue;
         }
-        else {
-            
-            //minBox = portalMap.getFieldValue(minBox);
-            //maxBox = portalMap.getFieldValue(maxBox);
+        
+        VEC4F minBoxHelper, maxBoxHelper;
+        minBoxHelper << minBox[0], minBox[1], minBox[2], 1.0;
+        maxBoxHelper << maxBox[0], maxBox[1], maxBox[2], 1.0;
 
-            VEC4F minBoxHelper, maxBoxHelper;
-            minBoxHelper << minBox[0], minBox[1], minBox[2], 1.0;
-            maxBoxHelper << maxBox[0], maxBox[1], maxBox[2], 1.0;
+        // Apply the transformation matrix
+        minBoxHelper = Trans * minBoxHelper;
+        maxBoxHelper = Trans * maxBoxHelper;
 
-            // Apply the transformation matrix
-            minBoxHelper = Trans * minBoxHelper;
-            maxBoxHelper = Trans * maxBoxHelper;
+        minBox << minBoxHelper[0], minBoxHelper[1], minBoxHelper[2];
+        maxBox << maxBoxHelper[0], maxBoxHelper[1], maxBoxHelper[2];
 
-            minBox << minBoxHelper[0], minBoxHelper[1], minBoxHelper[2];
-            maxBox << maxBoxHelper[0], maxBoxHelper[1], maxBoxHelper[2];
+        MAT4 newTransMat = portalMap.getTransformMat() * Trans;
 
+        portalMap.TransformMat = newTransMat;
+        juliaSet.setPortalMap(portalMap);
 
-            //MAT4 scaleMat = portalMap.getScaleMat();
-            //MAT4 rotMat = portalMap.getRotMat();
-            //MAT4 tranMat = portalMap.getTranMat();
-
-            MAT4 newTransMat = portalMap.getTransformMat() * Trans;
-
-            std::ostringstream matrixStr1;
-            matrixStr1 << "Pevious Trans:\n";
-            for (int row = 0; row < 4; row++) {
-                matrixStr1 << "[ ";
-                for (int col = 0; col < 4; col++) {
-                    matrixStr1 << portalMap.TransformMat(row, col);
-                    if (col < 3) matrixStr1 << ", ";
-                }
-                matrixStr1 << " ]\n";
-            }
-            MGlobal::displayInfo(matrixStr1.str().c_str());
-
-            portalMap.TransformMat = newTransMat;
-            juliaSet.setPortalMap(portalMap);
-
-
-            std::ostringstream matrixStr;
-            matrixStr << "newTransMat:\n";
-            for (int row = 0; row < 4; row++) {
-                matrixStr << "[ ";
-                for (int col = 0; col < 4; col++) {
-                    matrixStr << newTransMat(row, col);
-                    if (col < 3) matrixStr << ", ";
-                }
-                matrixStr << " ]\n";
-            }
-            MGlobal::displayInfo(matrixStr.str().c_str());
-
-            std::ostringstream stats;
-            stats << "iter > 1: " << i << " ";
-            stats << "minBox: (" << minBox[0] << ", " << minBox[1] << ", " << minBox[2] << ")";
-            stats << "maxBox: (" << maxBox[0] << ", " << maxBox[1] << ", " << maxBox[2] << ")";
-            MGlobal::displayInfo(stats.str().c_str());
-
-            MarchingCubes(fractalMesh, juliaSet, minBox, maxBox, portalMap);
-            MFnMesh outputMesh = fractalMesh.toMaya();
-        }
+        MarchingCubes(fractalMesh, juliaSet, minBox, maxBox, portalMap);
+        MFnMesh outputMesh = fractalMesh.toMaya();
     }
-
-    //MarchingCubes(fractalMesh, juliaSet, portalMap.getFieldValue(inputMesh.minVert), portalMap.getFieldValue(inputMesh.maxVert), portalMap);
-
-    // Convert back to Maya MFnMesh
-    //MFnMesh outputMesh = fractalMesh.toMaya();
-
-
-
-    // should we add a check here?
-    /*
-    if (outputMesh == MObject::kNullObj) {
-        MGlobal::displayError("Failed to create output mesh");
-        return MStatus::kFailure;
-    }
-    */
-
 
     // Print confirmation
     MGlobal::displayInfo("Fractal processing completed for mesh: " + meshName);

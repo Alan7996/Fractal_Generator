@@ -4,9 +4,9 @@
 
 #include "Quaternion/SETTINGS.h"
 
-#define NX 100
-#define NY 100
-#define NZ 100
+#define NX 50
+#define NY 50
+#define NZ 50
 
 typedef struct {
     double x,y,z;
@@ -506,18 +506,11 @@ VEC3F Normalize(const VEC3F& v) {
 
 void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, PortalMap pm) {
     std::vector<std::vector<std::vector<double>>> data;
-    data.resize(NZ);
     std::vector<TRIANGLE> tris;
 
 	int i,j,k,l;
     double isolevel = 0.0;
 	GRIDCELL grid;
-
-    //minBox = pm.getFieldValue(minBox);
-    //maxBox = pm.getFieldValue(maxBox);
-
-    //minBox << -2, -2, -2;
-    //maxBox << 0, 0, 0;
 
     std::ostringstream stats;
     stats << "in Marching Cubes";

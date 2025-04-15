@@ -1,11 +1,21 @@
 #pragma once
 #include <cmath>
 #include "Quaternion/SETTINGS.h"
+#include "PerlinNoise/PerlinNoise.h"
 
-// TODO, need to query versor and modulus field map values for the input position
 class Versor {
 public:
-    const double Epsilon = 1e-10;
+    siv::PerlinNoise nx, ny, nz;
+    double scale = 1.0;
+    unsigned int octave = 1u;
+
+    Versor();
+    Versor(unsigned int seedNx, unsigned int seedNy, unsigned int seedNz, unsigned int octave_, double scale_): octave(octave_), scale(scale_) {
+        nx.reseed(seedNx);
+        ny.reseed(seedNy);
+        nz.reseed(seedNz);
+    }
+    
     VEC3F getFieldValue(const VEC3F& pos) const;
 };
 
@@ -15,15 +25,4 @@ public:
     const double beta = 0.1;
     double radius = 1.0;
     VEC3F getFieldValue(const VEC3F& pos) const;
-};
-
-class VersorMap {
-public:
-    VersorMap(Versor versor_, Modulus modulus_) : versor(versor_), modulus(modulus_) {};
-
-    VEC3F getFieldValue(const VEC3F& pos) const;
-
-private:
-    Versor versor;
-    Modulus modulus;
 };
