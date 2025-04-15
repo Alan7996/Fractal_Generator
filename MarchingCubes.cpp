@@ -504,7 +504,7 @@ VEC3F Normalize(const VEC3F& v) {
     return (length > 0) ? VEC3F{v[0] / length, v[1] / length, v[2] / length} : VEC3F{0, 0, 0};
 }
 
-void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, PortalMap pm) {
+void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, size_t idx, size_t num_iter) {
     std::vector<std::vector<std::vector<double>>> data;
     std::vector<TRIANGLE> tris;
 
@@ -556,9 +556,9 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, PortalM
                             (float)k / (float)NZ * zSpan + minBox[2]);
 
                 //apply tranformation matrix not correct
-                VEC3F newPt = pm.getInvFieldValue(point);
+                VEC3F newPt = js.pm.getInvFieldValue(point, idx, num_iter);
 
-                data[i][j][k] = js.queryFieldValue(newPt);
+                data[i][j][k] = js.queryFieldValue(newPt, idx, num_iter);
 			}
 		}
 	}

@@ -66,7 +66,7 @@ static VEC3F closestPointOnTriangle(const VEC3F& p, const VEC3F& a, const VEC3F&
     return a + ab * v + ac * w;
 }
 
-VEC3F JuliaSet::computeClosestPointOnMesh(const VEC3F& point) const {
+VEC3F JuliaSet::computeClosestPointOnMesh(const VEC3F& point, size_t idx, size_t num_iter) const {
     if (!hasMesh) return VEC3F(); // Return (0,0,0) if no mesh is available
 
     VEC3F closestPoint;
@@ -84,9 +84,9 @@ VEC3F JuliaSet::computeClosestPointOnMesh(const VEC3F& point) const {
 
         VEC3F v1T, v2T, v3T;
 
-        v1T = pm.getInvFieldValue(v1);
-        v2T = pm.getInvFieldValue(v2);
-        v3T = pm.getInvFieldValue(v3);
+        v1T = pm.getInvFieldValue(v1, idx, num_iter);
+        v2T = pm.getInvFieldValue(v2, idx, num_iter);
+        v3T = pm.getInvFieldValue(v3, idx, num_iter);
 
 
         VEC3F candidate = closestPointOnTriangle(point, v1T, v2T, v3T);
@@ -152,11 +152,11 @@ bool JuliaSet::isPointInsideMesh(const VEC3F& point) const {
 }
 
 
-Real JuliaSet::computeSignedDistanceToMesh(const VEC3F& point) const {
+Real JuliaSet::computeSignedDistanceToMesh(const VEC3F& point, size_t idx, size_t num_iter) const {
     if (!hasMesh) return 0.0;
 
     // First, compute the closest point on the mesh
-    VEC3F closestPoint = computeClosestPointOnMesh(point);
+    VEC3F closestPoint = computeClosestPointOnMesh(point, idx, num_iter);
     Real unsignedDistance = (point - closestPoint).norm();
 
     // Determine if point is inside using ray casting
@@ -165,12 +165,12 @@ Real JuliaSet::computeSignedDistanceToMesh(const VEC3F& point) const {
     return isInside ? unsignedDistance : -unsignedDistance;
 }
 
-Real JuliaSet::queryFieldValue(const VEC3F& point, double escapeRadius) const {
+Real JuliaSet::queryFieldValue(const VEC3F& point, double escapeRadius, size_t idx, size_t num_iter) const {
     // Perturb the current position by perlin noise. Approximately simulating 
     // perturbed mesh surface without actually editing the mesh.
     VEC3F currPos = point + alpha * noise.getFieldValue(point);;
     // Calculate signed distance to mesh
-    return computeSignedDistanceToMesh(currPos);
+    return computeSignedDistanceToMesh(currPos, idx, num_iter);
 }
 
 // input output vex 

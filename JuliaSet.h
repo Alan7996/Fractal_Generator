@@ -13,15 +13,15 @@ public:
 	JuliaSet(int maxIter, double maxMag, double alpha_, double beta_, const QUATERNION& c, Versor versor);
 
 	// Returns whether the point is in the Julia set (false)
-	Real queryFieldValue(const VEC3F& point, double escapeRadius = 4.0) const;
+	Real queryFieldValue(const VEC3F& point, double escapeRadius = 4.0, size_t idx = 0, size_t num_iter = 1) const;
 
 	// Iteration func
 	QUATERNION applyIteration(const QUATERNION& point) const;
 
 	void setInputMesh(const Mesh& mesh);
-	VEC3F computeClosestPointOnMesh(const VEC3F& point) const;
+	VEC3F computeClosestPointOnMesh(const VEC3F& point, size_t idx, size_t num_iter) const;
 	bool isPointInsideMesh(const VEC3F& point) const;
-	Real computeSignedDistanceToMesh(const VEC3F& point) const;
+	Real computeSignedDistanceToMesh(const VEC3F& point, size_t idx, size_t num_iter) const;
 
 	void setQuaternionC(const QUATERNION& newC);
 	void setMaxIterations(int maxIter);
@@ -30,11 +30,12 @@ public:
 	void setPortalMap(const PortalMap& map) { pm = map; }
 	const PortalMap& getPortalMap() const { return pm; }
 
+	PortalMap pm;
+
 private:
 	int maxIterations;
 	double maxMagnitude;
 	QUATERNION c;
-	PortalMap pm;
 	Versor noise;
 
 	Mesh inputMesh;

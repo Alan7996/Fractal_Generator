@@ -88,36 +88,29 @@ MStatus FractalCmd::doIt(const MArgList& args)
     VEC3F minBox, maxBox;
     minBox = inputMesh.minVert - VEC3F(alpha, alpha, alpha);
     maxBox = inputMesh.maxVert + VEC3F(alpha, alpha, alpha);
-    MAT4 Trans = portalMap.getTransformMat();
+    
+    for (size_t portalIdx = 0; portalIdx < juliaSet.pm.portalTransforms.size(); ++portalIdx) {
+        VEC4F minBoxIter, maxBoxIter;
+        for (int i = 1; i <= maxIterations; ++i) {
+            if (i == 1) {
+                minBox = juliaSet.pm.getFieldValue(minBox, portalIdx, i);
+                maxBox = juliaSet.pm.getFieldValue(maxBox, portalIdx, i);
 
-    for (int i = 1; i <= maxIterations; ++i) {
-        if (i == 1) {
-            minBox = portalMap.getFieldValue(minBox);
-            maxBox = portalMap.getFieldValue(maxBox);
-        
-            MarchingCubes(fractalMesh, juliaSet, minBox, maxBox, portalMap);
+                minBoxIter << minBox[0], minBox[1], minBox[2], 1.0;
+                maxBoxIter << maxBox[0], maxBox[1], maxBox[2], 1.0;
+            
+                MarchingCubes(fractalMesh, juliaSet, minBox, maxBox, portalIdx, i);
+                MFnMesh outputMesh = fractalMesh.toMaya();
+                continue;
+            }
+
+            // Apply the transformation matrix iteratively
+            minBoxIter = juliaSet.pm.getTransformMat(portalIdx) * minBoxIter;
+            maxBoxIter = juliaSet.pm.getTransformMat(portalIdx) * maxBoxIter;
+
+            MarchingCubes(fractalMesh, juliaSet, {minBoxIter[0], minBoxIter[1], minBoxIter[2]}, {maxBoxIter[0], maxBoxIter[1], maxBoxIter[2]}, portalIdx, i);
             MFnMesh outputMesh = fractalMesh.toMaya();
-            continue;
         }
-        
-        VEC4F minBoxHelper, maxBoxHelper;
-        minBoxHelper << minBox[0], minBox[1], minBox[2], 1.0;
-        maxBoxHelper << maxBox[0], maxBox[1], maxBox[2], 1.0;
-
-        // Apply the transformation matrix
-        minBoxHelper = Trans * minBoxHelper;
-        maxBoxHelper = Trans * maxBoxHelper;
-
-        minBox << minBoxHelper[0], minBoxHelper[1], minBoxHelper[2];
-        maxBox << maxBoxHelper[0], maxBoxHelper[1], maxBoxHelper[2];
-
-        MAT4 newTransMat = portalMap.getTransformMat() * Trans;
-
-        portalMap.TransformMat = newTransMat;
-        juliaSet.setPortalMap(portalMap);
-
-        MarchingCubes(fractalMesh, juliaSet, minBox, maxBox, portalMap);
-        MFnMesh outputMesh = fractalMesh.toMaya();
     }
 
     // Print confirmation
