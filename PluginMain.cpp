@@ -46,33 +46,33 @@ void createSelectionUI(MStatus* status) {
                     text -label "Position";
                     rowLayout -numberOfColumns 6 -columnAlign6 "left" "left" "left" "left" "left" "left";
                         text -label "X";
-                        floatField -precision 1 -value 0.0 ("myPosX_" + $nodeID);
+                        floatField -precision 2 -value 0.00 ("myPosX_" + $nodeID);
                         text -label "Y";
-                        floatField -precision 1 -value 0.0 ("myPosY_" + $nodeID);
+                        floatField -precision 2 -value 0.00 ("myPosY_" + $nodeID);
                         text -label "Z";
-                        floatField -precision 1 -value 0.0 ("myPosZ_" + $nodeID);
+                        floatField -precision 2 -value 0.00 ("myPosZ_" + $nodeID);
                     setParent ..;
 
                     // Rotation Fields Row
                     text -label "Rotation";
                     rowLayout -numberOfColumns 6 -columnAlign6 "left" "left" "left" "left" "left" "left";
                         text -label "X";
-                        floatField -precision 1 -value 0.0 ("myRotX_" + $nodeID);
+                        floatField -precision 2 -value 0.00 ("myRotX_" + $nodeID);
                         text -label "Y";
-                        floatField -precision 1 -value 0.0 ("myRotY_" + $nodeID);
+                        floatField -precision 2 -value 0.00 ("myRotY_" + $nodeID);
                         text -label "Z";
-                        floatField -precision 1 -value 0.0 ("myRotZ_" + $nodeID);
+                        floatField -precision 2 -value 0.00 ("myRotZ_" + $nodeID);
                     setParent ..;
 
                     // Scale Fields Row
                     text -label "Scale";
                     rowLayout -numberOfColumns 6 -columnAlign6 "left" "left" "left" "left" "left" "left";
                         text -label "X";
-                        floatField -precision 1 -value 1.0 ("myScaleX_" + $nodeID);
+                        floatField -precision 2 -value 1.00 ("myScaleX_" + $nodeID);
                         text -label "Y";
-                        floatField -precision 1 -value 1.0 ("myScaleY_" + $nodeID);
+                        floatField -precision 2 -value 1.00 ("myScaleY_" + $nodeID);
                         text -label "Z";
-                        floatField -precision 1 -value 1.0 ("myScaleZ_" + $nodeID);
+                        floatField -precision 2 -value 1.00 ("myScaleZ_" + $nodeID);
                     setParent ..;
                     // Noise Scale Slider
                     floatSliderGrp -label "Noise Scale" -field true -minValue 0 -maxValue 1.0 -value 0.05 -step 0.0001 -precision 4 -columnAlign3 "left" "left" "left" ("myAlphaSlider_" + $nodeID);
