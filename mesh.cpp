@@ -15,7 +15,7 @@ void Mesh::fromMaya(const MFnMesh& mayaMesh) {
 
     // Retrieve vertices from the Maya mesh
     MPointArray points_;
-    mayaMesh.getPoints(points_, MSpace::kObject);
+    mayaMesh.getPoints(points_, MSpace::kWorld);
     for (unsigned int i = 0; i < points_.length(); ++i) {
         const MPoint& p = points_[i];
         vertices.push_back(VEC3F(static_cast<float>(p.x),
@@ -28,24 +28,6 @@ void Mesh::fromMaya(const MFnMesh& mayaMesh) {
         maxVert = VEC3F(std::max(maxVert[0], static_cast<double>(p.x)),
                         std::max(maxVert[1], static_cast<double>(p.y)),
                         std::max(maxVert[2], static_cast<double>(p.z)));
-
-        /*
-        const MPoint& p = points_[i];
-        VEC3F pT = pm.getFieldValue(VEC3F(static_cast<float>(p.x),
-            static_cast<float>(p.y),
-            static_cast<float>(p.z)));
-        vertices.push_back(VEC3F(static_cast<float>(p.x),
-                                      static_cast<float>(p.y),
-                                      static_cast<float>(p.z)));
-        minVert = VEC3F(std::min(minVert[0], static_cast<double>(pT[0])),
-                        std::min(minVert[1], static_cast<double>(pT[1])),
-                        std::min(minVert[2], static_cast<double>(pT[2])));
-
-        maxVert = VEC3F(std::max(maxVert[0], static_cast<double>(pT[0])),
-                        std::max(maxVert[1], static_cast<double>(pT[1])),
-                        std::max(maxVert[2], static_cast<double>(pT[2])));
-        
-        */
     }
 
     // Retrieve normals from the Maya mesh
