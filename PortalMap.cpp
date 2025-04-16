@@ -2,19 +2,6 @@
 #include "vec.h"
 
 PortalMap::PortalMap() {
-    // default values for testing
-    //portalRadius = 0.2;
-    //portalScale = 0.8;
-    MAT4 scaleMat, rotMat, transMat;
-    setScaleMat(&scaleMat, 0.5, 0.5, 0.5);
-    setRotMat(&rotMat, 0, 0, 90);
-    setTransMat(&transMat, 0.0, -1.8, 0.0);
-    createTransformMat(scaleMat, rotMat, transMat);
-
-    setScaleMat(&scaleMat, 1.5, 1.5, 1.5);
-    setRotMat(&rotMat, 0, 0, 45);
-    setTransMat(&transMat, 0.0, 2.5, 0.0);
-    createTransformMat(scaleMat, rotMat, transMat);
 }
 
 PortalMap::PortalMap(double sx, double sy, double sz, double tx, double ty, double tz, double rx, double ry, double rz) {
@@ -65,6 +52,14 @@ void PortalMap::setTransMat(MAT4* mat, double tx, double ty, double tz) {
 void PortalMap::createTransformMat(MAT4 scaleMat, MAT4 rotMat, MAT4 transMat) {
     TransformMats transforms = {scaleMat, rotMat, transMat, transMat * rotMat * scaleMat};
     portalTransforms.emplace_back(transforms);
+}
+
+void PortalMap::addPortal(double tx, double ty, double tz, double rx, double ry, double rz, double sx, double sy, double sz) {
+    MAT4 scaleMat, rotMat, transMat;
+    setScaleMat(&scaleMat, sx, sy, sz);
+    setRotMat(&rotMat, rx, ry, rz);
+    setTransMat(&transMat, tx, ty, tz);
+    createTransformMat(scaleMat, rotMat, transMat);
 }
 
 void PortalMap::setTransformMat(size_t idx, MAT4 scaleMat, MAT4 rotMat, MAT4 transMat) {

@@ -44,18 +44,26 @@ MStatus FractalCmd::doIt(const MArgList& args)
     double escapeRadius = 4.0;
     double cx = 0.0, cy = 0.5, cz = 0.0, cw = 0.0;
 
-    double alpha = 0.05;
-    double beta = 0.0;
-    double versorScale = 9.0;
+    double posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, 
+        alpha, beta, versorScale;
     unsigned int versorOctave = 1u;
     unsigned int maxIterations = 2;
 
     MString meshName = args.asString(0);
-    alpha = args.asDouble(1);
-    beta = args.asDouble(2);
-    versorScale = args.asDouble(3);
-    versorOctave = static_cast<unsigned int>(args.asInt(4));
-    maxIterations = static_cast<unsigned int>(args.asInt(5));
+    posX = args.asDouble(1);
+    posY = args.asDouble(2);
+    posZ = args.asDouble(3);
+    rotX = args.asDouble(4);
+    rotY = args.asDouble(5);
+    rotZ = args.asDouble(6);
+    scaleX = args.asDouble(7);
+    scaleY = args.asDouble(8);
+    scaleZ = args.asDouble(9);
+    alpha = args.asDouble(10);
+    beta = args.asDouble(11);
+    versorScale = args.asDouble(12);
+    versorOctave = static_cast<unsigned int>(args.asInt(13));
+    maxIterations = static_cast<unsigned int>(args.asInt(14));
     
     // Validate ranges (clamp if necessary)
     if (alpha < 0.0) alpha = 0.0;
@@ -87,6 +95,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
 
     // Construct Julia Set with the PortalMap
     PortalMap portalMap = PortalMap();
+    portalMap.addPortal(posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
     QUATERNION juliaC(cw, cx, cy, cz);
     JuliaSet juliaSet(maxIterations, escapeRadius, alpha, beta, juliaC, versor);
 

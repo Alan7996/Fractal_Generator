@@ -26,25 +26,7 @@ public:
     void setTransformMat(size_t idx, MAT4 scaleMat, MAT4 rotMat, MAT4 transMat);
     void createTransformMat(MAT4 scaleMat, MAT4 rotMat, MAT4 transMat);
 
-    /*
-    void addPortal(const VEC3F& center, const AngleAxis<Real>& rotation) {
-        portalCenters.push_back(center);
-        portalRotations.push_back(rotation);
-    }
-
-    void PortalMap::clearPortals() {
-        portalCenters.clear();
-        portalRotations.clear();
-    }
-
-    bool hasPortals() const { return !portalCenters.empty(); }
-
-    const std::vector<VEC3F>& getPortalCenters() const { return portalCenters; }
-    
-    Real getPortalRadius() const { return portalRadius; }
-    
-    Real getPortalScale() const { return portalScale; }
-    */
+    void addPortal(double tx, double ty, double tz, double rx, double ry, double rz, double sx, double sy, double sz);
 
     MAT4 getScaleMat(size_t idx) const { return portalTransforms[idx].scaleMat; }
     MAT4 getRotMat(size_t idx) const { return portalTransforms[idx].rotMat; }
