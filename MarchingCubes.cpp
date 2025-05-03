@@ -52,7 +52,7 @@ and 7->4.  Edge 8 thru 11 are the vertical edges from vert 0->4, 1->5,
 |/       |/    |/       |/
 3--------2     *---2----*
 */
-const int edgeTable[256]={
+static constexpr int edgeTable[256]={
 0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
 0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
 0x190, 0x99 , 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c,
@@ -109,7 +109,7 @@ triangles: one which is made of the intersection vertices found on edges
 Remember, each intersected edge contains only one surface vertex.  The
 vertex triples are listed in counter clockwise order for proper facin(*g).
 */
-const int triTable[256][16] =
+static constexpr int triTable[256][16] =
 {{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 {0, 1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -625,9 +625,9 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, size_t 
 
     auto rescaleGrid = [&minBox, &maxBox, &NX, &NY, &NZ](VEC3F v) {
         // Use NX-1 because marching loop goes from 0 to NX-1
-        float invNXm1 = 1.0f / (float)(NX - 1);
-        float invNYm1 = 1.0f / (float)(NY - 1);
-        float invNZm1 = 1.0f / (float)(NZ - 1);
+        float invNXm1 = 1.0f / (float)(NX);
+        float invNYm1 = 1.0f / (float)(NY);
+        float invNZm1 = 1.0f / (float)(NZ);
 
         return VEC3F(
             v[0] * invNXm1 * (maxBox[0] - minBox[0]) + minBox[0],
