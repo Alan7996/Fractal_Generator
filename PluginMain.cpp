@@ -42,38 +42,10 @@ void createSelectionUI(MStatus* status) {
                         -bc "updateSelectionField" 
                         ("mySelectionField_" + $nodeID);
 
-                    // Position Fields Row
-                    text -label "Position";
-                    rowLayout -numberOfColumns 6 -columnAlign6 "left" "left" "left" "left" "left" "left";
-                        text -label "X";
-                        floatField -precision 2 -value 0.00 ("myPosX_" + $nodeID);
-                        text -label "Y";
-                        floatField -precision 2 -value 0.00 ("myPosY_" + $nodeID);
-                        text -label "Z";
-                        floatField -precision 2 -value 0.00 ("myPosZ_" + $nodeID);
-                    setParent ..;
+                    button
+                        -label "Generate Portal"
+                        -command ("createPortalCube \"" + $nodeID + "\"");
 
-                    // Rotation Fields Row
-                    text -label "Rotation";
-                    rowLayout -numberOfColumns 6 -columnAlign6 "left" "left" "left" "left" "left" "left";
-                        text -label "X";
-                        floatField -precision 2 -value 0.00 ("myRotX_" + $nodeID);
-                        text -label "Y";
-                        floatField -precision 2 -value 0.00 ("myRotY_" + $nodeID);
-                        text -label "Z";
-                        floatField -precision 2 -value 0.00 ("myRotZ_" + $nodeID);
-                    setParent ..;
-
-                    // Scale Fields Row
-                    text -label "Scale";
-                    rowLayout -numberOfColumns 6 -columnAlign6 "left" "left" "left" "left" "left" "left";
-                        text -label "X";
-                        floatField -precision 2 -value 1.00 ("myScaleX_" + $nodeID);
-                        text -label "Y";
-                        floatField -precision 2 -value 1.00 ("myScaleY_" + $nodeID);
-                        text -label "Z";
-                        floatField -precision 2 -value 1.00 ("myScaleZ_" + $nodeID);
-                    setParent ..;
                     // Noise Scale Slider
                     floatSliderGrp -label "Noise Scale" -field true -minValue 0 -maxValue 1.0 -value 0.05 -step 0.0001 -precision 4 -columnAlign3 "left" "left" "left" ("myAlphaSlider_" + $nodeID);
                     // Noise Offset Slider
@@ -84,12 +56,25 @@ void createSelectionUI(MStatus* status) {
                     intSliderGrp -label "Versor Octave" -field true -minValue 0 -maxValue 8 -value 1 -columnAlign3 "left" "left" "left" ("myVersorOctaveSlider_" + $nodeID);
                     // Iterations Slider
                     intSliderGrp -label "Iterations" -field true -minValue 1 -maxValue 8 -value 2 -columnAlign3 "left" "left" "left" ("myNumIterationSlider_" + $nodeID);
+                    
                     // RowLayout for Delete Button (centered)
                     rowLayout -numberOfColumns 1 -columnAlign1 "center";
                         button -label "Delete Fractal Node" -command ("deleteFractalNode \"" + $nodeID + "\"");
                     setParent ..;
                 setParent ..; // End columnLayout
             setParent ..; // End frameLayout
+        }
+
+        ////////////////////////////////////////////////////////////////
+        // Procedure to create a cube named "portalCube_<nodeID>"
+        ////////////////////////////////////////////////////////////////
+        global proc createPortalCube(string $nodeID) {
+            string $node[] = `polyCube -w 1 -h 1 -d 1 -name ("portalCube_" + $nodeID)`;
+            string $name = $node[0];
+            // turn on shape-override template (wireframe-only) display
+            setAttr ($name + ".overrideEnabled")      1;
+            setAttr ($name + ".overrideDisplayType")  1;
+            print("Created portal: " + $name + "\n");
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -146,31 +131,27 @@ void createSelectionUI(MStatus* status) {
                     continue;
                 }
 
-                string $posXField = "myPosX_" + $i;
-                string $posYField = "myPosY_" + $i;
-                string $posZField = "myPosZ_" + $i;
-                string $rotXField = "myRotX_" + $i;
-                string $rotYField = "myRotY_" + $i;
-                string $rotZField = "myRotZ_" + $i;
-                string $scaleXField = "myScaleX_" + $i;
-                string $scaleYField = "myScaleY_" + $i;
-                string $scaleZField = "myScaleZ_" + $i;
+                string $selObj = `textFieldButtonGrp -q -text ("mySelectionField_" + $i)`;
                 string $alphaField = "myAlphaSlider_" + $i;
                 string $betaField = "myBetaSlider_" + $i;
                 string $versorScaleField = "myVersorScaleSlider_" + $i;
                 string $versorOctaveField = "myVersorOctaveSlider_" + $i;
                 string $numIterationField = "myNumIterationSlider_" + $i;
-                
+
+                string $portalName = ("portalCube_" + $i);
                 string $selectedObject = `textFieldButtonGrp -q -text $selField`;
-                float $posX = `floatField -q -value $posXField`;
-                float $posY = `floatField -q -value $posYField`;
-                float $posZ = `floatField -q -value $posZField`;
-                float $rotX = `floatField -q -value $rotXField`;
-                float $rotY = `floatField -q -value $rotYField`;
-                float $rotZ = `floatField -q -value $rotZField`;
-                float $scaleX = `floatField -q -value $scaleXField`;
-                float $scaleY = `floatField -q -value $scaleYField`;
-                float $scaleZ = `floatField -q -value $scaleZField`;
+                float $t[] = `xform -q -ws -translation $portalName`;
+                float $r[] = `xform -q -ws -rotation    $portalName`;
+                float $s[] = `xform -q -os -scale       $portalName`;
+                float $posX = $t[0];
+                float $posY = $t[1];
+                float $posZ = $t[2];
+                float $rotX = $r[0];
+                float $rotY = $r[1];
+                float $rotZ = $r[2];
+                float $scaleX = $s[0] / 2.0;
+                float $scaleY = $s[1] / 2.0;
+                float $scaleZ = $s[2] / 2.0;
                 float $alpha = `floatSliderGrp -q -value $alphaField`;
                 float $beta = `floatSliderGrp -q -value $betaField`;
                 float $versorScale = `floatSliderGrp -q -value $versorScaleField`;
