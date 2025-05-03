@@ -624,9 +624,16 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, size_t 
     mesh.normals.resize(tris.size() * 3, {0, 0, 0});
 
     auto rescaleGrid = [&minBox, &maxBox, &NX, &NY, &NZ](VEC3F v) {
-        return VEC3F((v[0] / (float)NX) * (maxBox[0] - minBox[0]) + minBox[0],
-                     (v[1] / (float)NY) * (maxBox[1] - minBox[1]) + minBox[1],
-                     (v[2] / (float)NZ) * (maxBox[2] - minBox[2]) + minBox[2]);
+        // Use NX-1 because marching loop goes from 0 to NX-1
+        float invNXm1 = 1.0f / (float)(NX - 1);
+        float invNYm1 = 1.0f / (float)(NY - 1);
+        float invNZm1 = 1.0f / (float)(NZ - 1);
+
+        return VEC3F(
+            v[0] * invNXm1 * (maxBox[0] - minBox[0]) + minBox[0],
+            v[1] * invNYm1 * (maxBox[1] - minBox[1]) + minBox[1],
+            v[2] * invNZm1 * (maxBox[2] - minBox[2]) + minBox[2]
+        );
     };
     
     for (const auto& tri : tris) {
