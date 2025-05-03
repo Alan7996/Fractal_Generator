@@ -7,9 +7,31 @@
 #include <maya/MIntArray.h>
 #include <maya/MStatus.h>
 #include <maya/MTypes.h>
+
+#include <maya/MFnDagNode.h>
+#include <maya/MDagPath.h>
+#include <maya/MDagPathArray.h>
+#include <maya/MFnTransform.h>
+#include <maya/MTransformationMatrix.h>
+#include <maya/MMatrix.h>
+
 #include <vector>
 
 void Mesh::fromMaya(const MFnMesh& mayaMesh) {
+    // grab the shape’s DAG path, pop off the shape to get the transform
+    MDagPath shapePath;
+    {
+        MFnDagNode fnDag(mayaMesh.object());
+        fnDag.getPath(shapePath);      // grabs the first instanced path to this shape
+    }
+    shapePath.pop();
+    MFnTransform fnXform(shapePath);
+
+    // pull out the full world‐space matrix…
+    MTransformationMatrix txMat(fnXform.transformationMatrix());
+    // …and then ask that for its world‐space translation
+    MVector translation = txMat.getTranslation(MSpace::kWorld);
+
     minVert = VEC3F(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
     maxVert = VEC3F(std::numeric_limits<double>::min(), std::numeric_limits<double>::min(), std::numeric_limits<double>::min());
 
@@ -18,16 +40,22 @@ void Mesh::fromMaya(const MFnMesh& mayaMesh) {
     mayaMesh.getPoints(points_, MSpace::kWorld);
     for (unsigned int i = 0; i < points_.length(); ++i) {
         const MPoint& p = points_[i];
-        vertices.push_back(VEC3F(static_cast<float>(p.x),
-                                      static_cast<float>(p.y),
-                                      static_cast<float>(p.z)));
-        minVert = VEC3F(std::min(minVert[0], static_cast<double>(p.x)),
-                        std::min(minVert[1], static_cast<double>(p.y)),
-                        std::min(minVert[2], static_cast<double>(p.z)));
+        float x = static_cast<float>(p.x - translation.x);
+        float y = static_cast<float>(p.y - translation.y);
+        float z = static_cast<float>(p.z - translation.z);
 
-        maxVert = VEC3F(std::max(maxVert[0], static_cast<double>(p.x)),
-                        std::max(maxVert[1], static_cast<double>(p.y)),
-                        std::max(maxVert[2], static_cast<double>(p.z)));
+        vertices.emplace_back(x, y, z);
+
+        minVert = VEC3F(
+            std::min(minVert[0], p.x - translation.x),
+            std::min(minVert[1], p.y - translation.y),
+            std::min(minVert[2], p.z - translation.z)
+        );
+        maxVert = VEC3F(
+            std::max(maxVert[0], p.x - translation.x),
+            std::max(maxVert[1], p.y - translation.y),
+            std::max(maxVert[2], p.z - translation.z)
+        );
     }
 
     // Retrieve normals from the Maya mesh

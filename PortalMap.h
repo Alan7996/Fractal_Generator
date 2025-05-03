@@ -34,11 +34,7 @@ public:
 
     MAT4 getTransformMat(size_t idx) const { return portalTransforms[idx].transformMat; }
 
-
     std::vector<VEC3F>          portalCenters;
     std::vector<TransformMats>  portalTransforms;
     std::vector<double>         portalRadius;
-    // std::vector<double>  portalScale;
-
-
 };
