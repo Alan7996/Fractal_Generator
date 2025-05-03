@@ -4,10 +4,6 @@
 
 #include "Quaternion/SETTINGS.h"
 
-#define NX 30
-#define NY 30
-#define NZ 30
-
 typedef struct {
     double x,y,z;
 } XYZ;
@@ -504,7 +500,17 @@ VEC3F Normalize(const VEC3F& v) {
     return (length > 0) ? VEC3F{v[0] / length, v[1] / length, v[2] / length} : VEC3F{0, 0, 0};
 }
 
-void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, size_t idx, size_t num_iter) {
+void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, size_t idx, size_t num_iter, bool isLowRes) {
+    int NX = 50;
+    int NY = 50;
+    int NZ = 50;
+
+    if (isLowRes) {
+        NX = 10;
+        NY = 10;
+        NZ = 10;
+    }
+
     std::vector<std::vector<std::vector<double>>> data;
     std::vector<TRIANGLE> tris;
 
@@ -617,7 +623,7 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, size_t 
     std::unordered_map<XYZ, unsigned int, XYZHash, XYZEqual> vertexMap;
     mesh.normals.resize(tris.size() * 3, {0, 0, 0});
 
-    auto rescaleGrid = [&minBox, &maxBox](VEC3F v) {
+    auto rescaleGrid = [&minBox, &maxBox, &NX, &NY, &NZ](VEC3F v) {
         return VEC3F((v[0] / (float)NX) * (maxBox[0] - minBox[0]) + minBox[0],
                      (v[1] / (float)NY) * (maxBox[1] - minBox[1]) + minBox[1],
                      (v[2] / (float)NZ) * (maxBox[2] - minBox[2]) + minBox[2]);

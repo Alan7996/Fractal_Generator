@@ -64,6 +64,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
     versorScale = args.asDouble(12);
     versorOctave = static_cast<unsigned int>(args.asInt(13));
     maxIterations = static_cast<unsigned int>(args.asInt(14));
+    bool isLowRes = args.asBool(15);
     
     // Validate ranges (clamp if necessary)
     if (alpha < 0.0) alpha = 0.0;
@@ -136,7 +137,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
                 }
                 getBboxMinMax(currBbox, &minBoxIter, &maxBoxIter);
             
-                MarchingCubes(fractalMesh, juliaSet, minBoxIter, maxBoxIter, portalIdx, i);
+                MarchingCubes(fractalMesh, juliaSet, minBoxIter, maxBoxIter, portalIdx, i, isLowRes);
                 MFnMesh outputMesh = fractalMesh.toMaya();
                 continue;
             }
@@ -147,7 +148,7 @@ MStatus FractalCmd::doIt(const MArgList& args)
             }
             getBboxMinMax(currBbox, &minBoxIter, &maxBoxIter);
 
-            MarchingCubes(fractalMesh, juliaSet, {minBoxIter[0], minBoxIter[1], minBoxIter[2]}, {maxBoxIter[0], maxBoxIter[1], maxBoxIter[2]}, portalIdx, i);
+            MarchingCubes(fractalMesh, juliaSet, {minBoxIter[0], minBoxIter[1], minBoxIter[2]}, {maxBoxIter[0], maxBoxIter[1], maxBoxIter[2]}, portalIdx, i, isLowRes);
             MFnMesh outputMesh = fractalMesh.toMaya();
         }
     }

@@ -144,6 +144,8 @@ void createSelectionUI(MStatus* status) {
         // Generate callback that processes each fractal node group.
         ////////////////////////////////////////////////////////////////////////
         global proc onGeneratePressed() {
+            int $lowResMode = `checkBox -q -value "myToggleCheckbox"`;
+
             global int $nodeCounter;
             int $numNodes = $nodeCounter - 1;
             for ($i = 1; $i <= $numNodes; $i++) {
@@ -186,7 +188,8 @@ void createSelectionUI(MStatus* status) {
                                + $rotX + " " + $rotY + " " + $rotZ + " " 
                                + $scaleX + " " + $scaleY + " " + $scaleZ + " " 
                                + $alpha + " " + $beta + " " + $versorScale + " " 
-                               + $versorOctave + " " + $numIterations);
+                               + $versorOctave + " " + $numIterations + " "
+                               + $lowResMode);
                 print ("Executing for node " + $i + ": " + $cmd + "\n");
                 eval($cmd);
             }
@@ -207,6 +210,12 @@ void createSelectionUI(MStatus* status) {
                 global string $nodesContainer;
             $nodesContainer = `columnLayout -adjustableColumn true`;
             setParent ..;
+
+            checkBox
+                -label "Enable Low Res"
+                -value false
+                -annotation "When on, passes a 1 to FractalCmd; otherwise 0"
+                "myToggleCheckbox";
 
             button -label "Generate" -command "onGeneratePressed";
             showWindow mySelectionWindow;
