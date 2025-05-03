@@ -42,9 +42,19 @@ void createSelectionUI(MStatus* status) {
                         -bc "updateSelectionField" 
                         ("mySelectionField_" + $nodeID);
 
+                    string $btnName = "generateButton_" + $nodeID;
                     button
                         -label "Generate Portal"
-                        -command ("createPortalCube \"" + $nodeID + "\"");
+                        -command ("createPortalCube \"" + $nodeID + "\"")
+                        $btnName;
+
+                    // Generated portal mesh name
+                    textFieldGrp
+                        -label "Portal Mesh:"
+                        -columnAlign2 "left" "left"
+                        -enable false
+                        -text ""
+                        ("generatedMeshField_" + $nodeID);
 
                     // Noise Scale Slider
                     floatSliderGrp -label "Noise Scale" -field true -minValue 0 -maxValue 1.0 -value 0.05 -step 0.0001 -precision 4 -columnAlign3 "left" "left" "left" ("myAlphaSlider_" + $nodeID);
@@ -74,6 +84,19 @@ void createSelectionUI(MStatus* status) {
             // turn on shape-override template (wireframe-only) display
             setAttr ($name + ".overrideEnabled")      1;
             setAttr ($name + ".overrideDisplayType")  1;
+
+            string $fieldName = ("generatedMeshField_" + $nodeID);
+            if (`control -exists $fieldName`) {
+                textFieldGrp -e -text $name $fieldName;
+            }
+
+            string $btn = "generateButton_" + $nodeID;
+            if (`control -exists $btn`) {
+                button -e -enable false $btn;
+            } else {
+                warning("Couldn¡¯t find button: " + $btn);
+            }
+
             print("Created portal: " + $name + "\n");
         }
 
