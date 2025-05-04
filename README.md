@@ -15,7 +15,7 @@ Table of Contents
 6. Advanced Features
 7. Tips and Tricks
 8. Troubleshooting
-9. Example Presets
+9. Example Results
 
 
 Introduction
