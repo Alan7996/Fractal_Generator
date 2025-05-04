@@ -72,7 +72,7 @@ Operation Buttons:
 - Select: Selects the target object for fractal generation
 - Generate Portal: Creates the portal map (transformation matrix) that determines exactly how the self-similarity transformations will be applied
 - Generate: Processes the settings and generates the fractal mesh
-- Presets: 
+- Presets: Generate a simpler but faster-to-run version for further adjustaments
 
 Parameter Controls
 
@@ -98,15 +98,15 @@ Follow these steps to create your first fractal using MASSGen:
 - Select your base mesh using the "Select" button
 - Select "Generate Portal" and set the Translation, Rotation, and Scale for your fractal node by applying Maya traslation, rotation, and scale operations
 - For a simple start, try these settings:
-- Mesh: Cube
-- Position: X=0.0, Y=2.0, Z=0.0
-- Rotation: X=0.0, Y=0.0, Z=60.0
-- Scale: X=1.2, Y=1.2, Z=1.2
-- Noise Scale: 0.05
-- Noise Offset: 0.0
-- Versor Scale: 9.0
-- Versor Octave: 1
-- Iterations: 2
+    - Mesh: Cube
+    - Position: X=0.0, Y=2.0, Z=0.0
+    - Rotation: X=0.0, Y=0.0, Z=60.0
+    - Scale: X=1.2, Y=1.2, Z=1.2
+    - Noise Scale: 0.05
+    - Noise Offset: 0.0
+    - Versor Scale: 9.0
+    - Versor Octave: 1
+    - Iterations: 2
 4. Generate Your Fractal:
 - Click the "Generate" button
 - Wait for the processing to complete (this may take a few moments depending on your settings)
@@ -115,15 +115,62 @@ Follow these steps to create your first fractal using MASSGen:
 
 Advanced Features
 -----------------
+Once you're comfortable with basic fractal generation, you can explore these advanced features:
+
+1. Multiple Fractal Nodes
+- Create your first fractal node as described above
+- Click "Add Fractal Node" to create additional nodes
+- Position each node in different locations on your mesh
+- Generate to create complex, multi-portal fractals
+
+2. Portal Generation
+The "Generate Portal" feature allows you to create and configure the transformation matrix for your self-similarity regions:
+- Select your base mesh (try your own mesh!)
+- Set up position, rotation, and scale for your portal
+- Click "Generate Portal" to create the portal map
+- After generating the portal, you can apply standard Maya operations (translate, rotate, scale) to adjust the portal mesh
+- These transformations will determine exactly how the self-similarity appears in your final mesh
+
+3. Parameter Experimentation
+For more interesting fractal variations, try adjusting these parameters:
+- Noise Scale and Offset: Higher values create more turbulent fractals
+- Versor Scale: Higher values produce more complex, detailed fractals
+- Iterations: Increase for more recursive detail (but watch performance)
 
 
 Tips and Tricks
 ---------------
-
+1. Start Simple: Begin with basic shapes and low iteration counts to understand how the parameters affect the output
+2. Save Intermediate Results: Save your Maya scene after each successful generation
+3. Performance Optimization: For complex fractals, consider:
+- Reducing polygon count in your base mesh
+- Using fewer fractal nodes
+- Limiting iteration depth to 2-3 for previews
+4. Visual Experimentation: Small changes to rotation and scale can dramatically alter the final appearance
 
 Troubleshooting
---------------
+---------------
+Common Issues and Solutions
 
+1. Plugin Not Loading:
+- Ensure Maya version compatibility
+- Check file permissions on the plugin directory
+- Verify all dependency DLLs are present
+
+2. Slow Performance:
+- Reduce iteration count
+- Simplify base geometry
+- Close other resource-intensive applications
+
+3. Unexpected Results:
+- Check for inverted normals on your base mesh
+- Ensure scale values are appropriate for your model size
+- Try resetting parameter values to defaults
+
+4. Crashes During Generation:
+- Ensure sufficient RAM is available
+- Try generating with lower iteration counts
+- Check for mesh errors in your base model
 
 Examples Results
 ----------------
