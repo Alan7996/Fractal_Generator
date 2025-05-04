@@ -35,12 +35,18 @@ Installation
 - Download the MASSGen plugin files from our GitHub repository
 - Extract the ZIP file to a location on your computer
 - Copy the plugin files to your Maya plugins directory:
+
     Windows: C:\Users\[YourUsername]\Documents\maya\[MayaVersion]\plug-ins
+    
     Mac: /Users/[YourUsername]/Library/Preferences/Autodesk/maya/[MayaVersion]/plug-ins
+    
     Linux: /home/[YourUsername]/maya/[MayaVersion]/plug-ins
 - Launch Maya and load the plugin:
+
     Go to Windows -> Settings/Preferences -> Plug-in Manager
+
     Click on "Browse" and find "MASSGen.mll" in the list and check both "Loaded" and "Auto load"
+
     After loading the .mll plugin, you can find "Fractal Plugin" in the Maya menu bar. Click on it, and click on "Open Selection UI".
 
 Basic Concepts
@@ -78,6 +84,42 @@ Parameter Controls
 
 Note: After clicking "Generate Portal," you can further refine the portal's effect by using standard Maya operations (translate, rotate, scale) directly on the portal mesh. These adjustments will be reflected in the final fractal generation.
 
+Creating Your First Fractal
+---------------------------
+Follow these steps to create your first fractal using MASSGen:
+1. Create or Import a Base Mesh:
+- You can use any Maya primitive shape (cube, sphere, cone, etc.) or import your own custom mesh
+- For beginners, we recommend starting with a simple shape like a cube
+2. Open the MASSGen UI:
+- After loading the .mll plugin file
+- Go to Fractal Plugin in Maya menu bar
+3. Set Up Your Fractal Node:
+- Click "Add Fractal Node" to create your first fractal node
+- Select your base mesh using the "Select" button
+- Select "Generate Portal" and set the Translation, Rotation, and Scale for your fractal node by applying Maya traslation, rotation, and scale operations
+- For a simple start, try these settings:
+- Mesh: Cube
+- Position: X=0.0, Y=2.0, Z=0.0
+- Rotation: X=0.0, Y=0.0, Z=60.0
+- Scale: X=1.2, Y=1.2, Z=1.2
+- Noise Scale: 0.05
+- Noise Offset: 0.0
+- Versor Scale: 9.0
+- Versor Octave: 1
+- Iterations: 2
+4. Generate Your Fractal:
+- Click the "Generate" button
+- Wait for the processing to complete (this may take a few moments depending on your settings)
+- Your self-similar fractal mesh will appear in the scene
+
+
+Advanced Features
+-----------------
+
+
+Tips and Tricks
+---------------
+
 
 Troubleshooting
 --------------
@@ -86,6 +128,3 @@ Troubleshooting
 Examples Results
 ----------------
 
-
-Technical Background
---------------------
