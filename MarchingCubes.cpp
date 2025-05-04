@@ -518,13 +518,6 @@ void MarchingCubes(Mesh& mesh, JuliaSet& js, VEC3F minBox, VEC3F maxBox, size_t 
     double isolevel = 0.0;
 	GRIDCELL grid;
 
-    std::ostringstream stats;
-    stats << "in Marching Cubes";
-    stats << "minBox: (" << minBox[0] << ", " << minBox[1] << ", " << minBox[2] << ")";
-    stats << "maxBox: (" << maxBox[0] << ", " << maxBox[1] << ", " << maxBox[2] << ")";
-
-    MGlobal::displayInfo(stats.str().c_str());
-
 	data.resize(NX+1);
 	for (i=0;i<=NX;i++) {
         std::vector<std::vector<double>> tempYZ;
