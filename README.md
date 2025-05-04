@@ -177,15 +177,22 @@ Examples Results
 ----------------
 
 ![](MASSGen_Result1.png)
+
 A cube with two portal maps (High resolution, 2 iterations for each portal map)
 
+
 ![](MASSGen_Result2.png)
+
 A torus with one portal map (High resolution, 3 iterations)
+
 
 ![](MASSGen_Result3_HighRes.png)
 ![](MASSGen_Result3_LowRes.png)
+
 A sphere with one portal map in high resolution and low resolution (2 iterations)
+
 
 ![](MASSGen_Result4_HighRes.png)
 ![](MASSGen_Result4_LowRes.png)
+
 A complicated cat mesh with one portal map in high resolution and low resolution (2 iterations)
