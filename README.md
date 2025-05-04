@@ -45,9 +45,9 @@ Installation
 
     Go to Windows -> Settings/Preferences -> Plug-in Manager
 
-    Click on "Browse" and find "MASSGen.mll" in the list and check both "Loaded" and "Auto load"
+    Select "Browse" and find "MASSGen.mll" in the list and check both "Loaded" and "Auto load"
 
-    After loading the .mll plugin, you can find "Fractal Plugin" in the Maya menu bar. Click on it, and click on "Open Selection UI".
+    After loading the .mll plugin, you can find "Fractal Plugin" in the Maya menu bar. Select it, and click "Open Selection UI".
 
 Basic Concepts
 --------------
@@ -72,7 +72,7 @@ Operation Buttons:
 - Select: Selects the target object for fractal generation
 - Generate Portal: Creates the portal map (transformation matrix) that determines exactly how the self-similarity transformations will be applied
 - Generate: Processes the settings and generates the fractal mesh
-- Presets: Generate a simpler but faster-to-run version for further adjustaments
+- Low-Res: Generate a simpler but faster-to-run preset for further adjustaments
 
 Parameter Controls
 
@@ -108,7 +108,8 @@ Follow these steps to create your first fractal using MASSGen:
     - Versor Octave: 1
     - Iterations: 2
 4. Generate Your Fractal:
-- Click the "Generate" button
+- Click "Low-Res" if you want a rough version with lower resolution to view and adjust your portal map
+- Click the "Generate" button to generate your final result
 - Wait for the processing to complete (this may take a few moments depending on your settings)
 - Your self-similar fractal mesh will appear in the scene
 
