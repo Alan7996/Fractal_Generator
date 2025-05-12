@@ -77,9 +77,25 @@ Operation Buttons:
 Parameter Controls
 
 - Noise Scale: Controls the scale of the noise pattern applied to the fractal
+![](NoiseScale0.05.png) ![](NoiseScale0.5.png) 
+
+(Noise Scale = 0.05 vs Noise Scale = 0.5)
+
 - Noise Offset: Shifts the noise pattern
+![](NoiseScale0.05.png) ![](NoiseOffset6.0.png) 
+
+(Noise Offset = 0.0 vs Noise Offset = 6.0)
+
 - Versor Scale: Adjusts the scale of the versor field (controls fine details)
+![](NoiseScale0.05.png) ![](VersorScale3.0.png) 
+
+(Versor Scale = 9 vs Versor Scale = 3)
+
 - Versor Octave: Sets the complexity of the versor field patterns
+![](NoiseScale0.05.png) ![](VersorOctave5.png) 
+
+(Versor Octave = 1 vs Versor Octave = 5)
+
 - Iterations: Determines the recursion depth of the fractal (higher values create more detail but increase processing time)
 
 Note: After clicking "Generate Portal," you can further refine the portal's effect by using standard Maya operations (translate, rotate, scale) directly on the portal mesh. These adjustments will be reflected in the final fractal generation.
