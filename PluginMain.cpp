@@ -94,7 +94,7 @@ void createSelectionUI(MStatus* status) {
             if (`control -exists $btn`) {
                 button -e -enable false $btn;
             } else {
-                warning("Couldn¡¯t find button: " + $btn);
+                warning("Couldnï¿½ï¿½t find button: " + $btn);
             }
 
             print("Created portal: " + $name + "\n");
@@ -227,7 +227,7 @@ void createSelectionUI(MStatus* status) {
         cerr << "Error executing melCreateSelectionUI!" << endl;
     }
 
-    // Create a menu item in Maya¡¯s main window to open the UI.
+    // Create a menu item in Mayaï¿½ï¿½s main window to open the UI.
     MGlobal::executeCommand(R"(
         global string $gMainWindow;
         if (`menu -exists fractalPluginMenu`) {
