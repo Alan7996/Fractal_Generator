@@ -62,7 +62,7 @@ User Interface
 --------------
 The MASSGen interface provides comprehensive controls for creating and manipulating fractal self-similarity in your meshes:
 
-![](MASSGen_UI.png)
+![](doc/MASSGen_UI.png)
 
 Operation Buttons:
 
@@ -192,23 +192,34 @@ Common Issues and Solutions
 Examples Results
 ----------------
 
-![](MASSGen_Result1.png)
+![](doc/MASSGen_Result1.png)
 
 A cube with two portal maps (High resolution, 2 iterations for each portal map)
 
 
-![](MASSGen_Result2.png)
+![](doc/MASSGen_Result2.png)
 
 A torus with one portal map (High resolution, 3 iterations)
 
 
-![](MASSGen_Result3_HighRes.png)
-![](MASSGen_Result3_LowRes.png)
+![](doc/MASSGen_Result3_HighRes.png)
+![](doc/MASSGen_Result3_LowRes.png)
 
 A sphere with one portal map in high resolution and low resolution (2 iterations)
 
 
-![](MASSGen_Result4_HighRes.png)
-![](MASSGen_Result4_LowRes.png)
+![](doc/MASSGen_Result4_HighRes.png)
+![](doc/MASSGen_Result4_LowRes.png)
 
 A complicated cat mesh with one portal map in high resolution and low resolution (2 iterations)
+
+
+![](doc/MASSGen_spot_low_res.jpg)
+![](doc/MASSGen_spot_high_res.jpg)
+
+A complicated cow mesh (spot) with one portal map in high resolution and low resolution (1 iteration) without noise. We can observe the semantic details such as horns and ears remain well-preserved in the repetition.
+
+
+![](doc/MASSGen_bunny_less_noise.jpg)
+
+A recreation of the stanford bunny example from the original paper.

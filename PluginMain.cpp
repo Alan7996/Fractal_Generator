@@ -33,7 +33,7 @@ void createSelectionUI(MStatus* status) {
         ////////////////////////////////////////////////////////////////////////
         global proc createFractalNodeFields(string $nodeID) {
             // Create a frameLayout for this fractal node.
-            frameLayout -label ("Fractal Node " + $nodeID) -collapsable true -marginWidth 10 -marginHeight 10 ("nodeFrame_" + $nodeID);
+            frameLayout -label ("Fractal Node " + $nodeID) -collapsable true -marginWidth 10 -marginHeight 10 -height 480 ("nodeFrame_" + $nodeID);
                 columnLayout -adjustableColumn true -columnAlign "left";
                     // Selected Object Field for this node.
                     textFieldButtonGrp -columnAlign3 "left" "left" "left" 
@@ -57,15 +57,49 @@ void createSelectionUI(MStatus* status) {
                         ("generatedMeshField_" + $nodeID);
 
                     // Noise Scale Slider
-                    floatSliderGrp -label "Noise Scale" -field true -minValue 0 -maxValue 1.0 -value 0.05 -step 0.0001 -precision 4 -columnAlign3 "left" "left" "left" ("myAlphaSlider_" + $nodeID);
+                    floatSliderGrp -label "Noise Scale" -field true -minValue 0 -maxValue 0.5 -value 0.05 -step 0.0001 -precision 4 -columnAlign3 "left" "left" "left" ("myAlphaSlider_" + $nodeID);
+                    text
+                        -align "left"
+                        -label "    Multiplicative factor influencing magnitude of Perlin noise."
+                        -enable true
+                        -width 200
+                        -wordWrap true;           
+
                     // Noise Offset Slider
                     floatSliderGrp -label "Noise Offset" -field true -minValue 0 -maxValue 10 -value 0.0 -step 0.01 -precision 2 -columnAlign3 "left" "left" "left" ("myBetaSlider_" + $nodeID);
+                    text
+                        -align "left"
+                        -label "    Constant vector added to the noise input coordinates to translate the Perlin noise pattern across the mesh surface."
+                        -enable true
+                        -width 200
+                        -wordWrap true;  
+
                     // Versor Scale Slider
                     floatSliderGrp -label "Versor Scale" -field true -minValue 0 -maxValue 10 -value 9.0 -step 0.01 -precision 2 -columnAlign3 "left" "left" "left" ("myVersorScaleSlider_" + $nodeID);
+                    text
+                        -align "left"
+                        -label "    Multiplicative factor controlling the overall strength of the quaternion-based noise warp applied to the mesh."
+                        -enable true
+                        -width 200
+                        -wordWrap true;
+
                     // Versor Octave Slider
                     intSliderGrp -label "Versor Octave" -field true -minValue 0 -maxValue 8 -value 1 -columnAlign3 "left" "left" "left" ("myVersorOctaveSlider_" + $nodeID);
+                    text
+                        -align "left"
+                        -label "    Number of sequential noise layers summed to introduce progressively finer fractal detail into the warp."
+                        -enable true
+                        -width 200
+                        -wordWrap true;
+
                     // Iterations Slider
                     intSliderGrp -label "Iterations" -field true -minValue 1 -maxValue 8 -value 2 -columnAlign3 "left" "left" "left" ("myNumIterationSlider_" + $nodeID);
+                    text
+                        -align "left"
+                        -label "    Number of fractalization iterations to perform."
+                        -enable true
+                        -width 200
+                        -wordWrap true;
                     
                     // RowLayout for Delete Button (centered)
                     rowLayout -numberOfColumns 1 -columnAlign1 "center";
@@ -199,25 +233,45 @@ void createSelectionUI(MStatus* status) {
         // Main UI window procedure.
         ////////////////////////////////////////////////////////////////////////
         global proc openSelectionWindow() {
-            if (`window -exists mySelectionWindow`) {
-                deleteUI mySelectionWindow;
-            }
-            window -title "Fractal Generator" -resizeToFitChildren true mySelectionWindow;
+            // 1) Fixed window size, auto-resize off:
+            if (`window -exists mySelectionWindow`) deleteUI mySelectionWindow;
+            window 
+                -title "Fractal Generator" 
+                -resizeToFitChildren true  // prevent Maya from growing to fit all children
+                -width 320 
+                -height 500 
+            mySelectionWindow;
+
             columnLayout -adjustableColumn true;
 
-            button -label "Add fractal node" -command "addFractalNode";
-            scrollLayout -width 270 -height 500 -horizontalScrollBarThickness 16 -verticalScrollBarThickness 16;
-                global string $nodesContainer;
-            $nodesContainer = `columnLayout -adjustableColumn true`;
-            setParent ..;
+                button -label "Add fractal node" -command "addFractalNode";
 
-            checkBox
-                -label "Enable Low Res"
-                -value false
-                -annotation "When on, passes a 1 to FractalCmd; otherwise 0"
-                "myToggleCheckbox";
+                // 2) ScrollLayout around *only* the nodes container:
+                scrollLayout
+                    -width 300 
+                    -height 500 
+                    -horizontalScrollBarThickness 16 
+                    -verticalScrollBarThickness   16 
+                    -verticalScrollBarAlwaysVisible true 
+                    -childResizable true        // allow width to shrink, only scroll vertically
+                    "fractalNodesScroll";
 
-            button -label "Generate" -command "onGeneratePressed";
+                    // This columnLayout is the one that will scroll
+                    global string $nodesContainer;
+                    $nodesContainer = `columnLayout -adjustableColumn true`;
+
+                setParent ..;  // closes the nodesContainer columnLayout
+                setParent ..;  // closes the scrollLayout itself
+
+                // Now these live *below* the scroll region, always visible:
+                checkBox
+                    -label "Enable Low Res"
+                    -value false
+                    -annotation "When on, passes a 1 to FractalCmd; otherwise 0"
+                    "myToggleCheckbox";
+
+                button -label "Generate" -command "onGeneratePressed";
+
             showWindow mySelectionWindow;
         }
     )";
